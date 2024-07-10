@@ -5,6 +5,8 @@
 #include "../Chess/defines.hpp"
 #include "defines.hpp"
 
+#include <iostream>
+
 namespace Graphics {
 
 class Renderer  {
