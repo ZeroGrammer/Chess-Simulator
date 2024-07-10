@@ -21,7 +21,8 @@ set SDL_LIBS=SDL2main.lib SDL2.lib SDL2_image.lib SDL2_ttf.lib
 
 set SOURCE_FILES=..\source\main.cpp ^
                  ..\source\game.cpp ^
-                 ..\source\Graphics\window.cpp
+                 ..\source\Graphics\window.cpp ^
+                 ..\source\Graphics\renderer.cpp
 
 set OUTPUT_EXE=chess.exe
 

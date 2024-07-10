@@ -1,7 +1,8 @@
 #ifndef _GAME_HPP_
 #define _GAME_HPP_
 
-#include "Graphics/window.hpp"
+#include "Graphics/graphics.hpp"
+#include <iostream>
 
 namespace Game {
 

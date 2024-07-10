@@ -4,7 +4,7 @@
 using namespace Graphics;
 
 Window::Window()
-    : _window(nullptr), _renderer(nullptr), _running(true)
+    : _window(nullptr), _running(true), renderer(nullptr) 
 {
     _board.x = 0;
     _board.y = 0;
@@ -27,7 +27,7 @@ Window::Window()
 
 Window::~Window() {
 
-    SDL_DestroyRenderer(_renderer);
+    delete renderer;
     SDL_DestroyWindow(_window);
 
     TTF_Init();
@@ -49,15 +49,8 @@ int Window::initialize() {
         return -1;
     }
 
-    _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_PRESENTVSYNC);
-    if (_renderer == nullptr) {
-        std::cerr << "Failed to create the SDL Renderer: ";
-        std::cerr << SDL_GetError() << std::endl;
-        return -1;
-    }
-
-    // Set the blend mode for the renderer to enable transparency
-    SDL_SetRenderDrawBlendMode(_renderer, SDL_BLENDMODE_BLEND);
+    renderer = new Renderer(_window, _wnd, _board, _menu, _logs);
+    if (renderer->initialize() == -1) return -1;
 
     return 0;
 }
@@ -68,26 +61,6 @@ void Window::pollEvents() {
     SDL_WaitEvent(&event);
 
     if (event.type == SDL_QUIT) _running = false;
-
-    SDL_SetRenderDrawColor(_renderer, 123, 123, 123, 255);
-    SDL_RenderDrawRect(_renderer, &_menu);
-
-    SDL_SetRenderDrawColor(_renderer, 53, 53, 53, 255);
-    SDL_RenderFillRect(_renderer, &_board);
-
-    SDL_SetRenderDrawColor(_renderer, 121, 32, 189, 32);
-    SDL_RenderDrawRect(_renderer, &_logs);
-}
-
-void Window::present() {
-    
-    SDL_RenderPresent(_renderer);
-}
-
-void Window::clear() {
-    
-    SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
-    SDL_RenderFillRect(_renderer, &_wnd);
 }
 
 bool Window::shouldClose() const {
