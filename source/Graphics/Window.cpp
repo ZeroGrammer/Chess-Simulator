@@ -1,0 +1,96 @@
+
+#include "window.hpp"
+
+using namespace Graphics;
+
+Window::Window()
+    : _window(nullptr), _renderer(nullptr), _running(true)
+{
+    _board.x = 0;
+    _board.y = 0;
+    _board.w = BOARD_WIDTH;
+    _board.h = BOARD_HEIGHT;
+
+    _logs.x = 0;
+    _logs.y = _board.h;
+    _logs.w = _board.w;
+    _logs.h = (2 * SQUARE_SIZE);
+
+    _menu.x = _board.w;
+    _menu.y = 0;
+    _menu.w = (4 * SQUARE_SIZE);
+    _menu.h = _board.h + _logs.h;
+
+    _wnd.w = _board.w + _menu.w;
+    _wnd.h = _menu.h;
+}
+
+Window::~Window() {
+
+    SDL_DestroyRenderer(_renderer);
+    SDL_DestroyWindow(_window);
+
+    TTF_Init();
+    IMG_Quit();
+    SDL_Quit();
+}
+
+int Window::initialize() {
+
+    SDL_Init(SDL_INIT_EVERYTHING);
+    IMG_Init(IMG_INIT_PNG);
+    TTF_Init();
+
+    _window = SDL_CreateWindow(APPLICATION_NAME, SDL_WINDOWPOS_UNDEFINED,
+                               SDL_WINDOWPOS_UNDEFINED, _wnd.w, _wnd.h, 0);
+    if (_window == nullptr) {
+        std::cerr << "Failed to create the SDL Window: ";
+        std::cerr << SDL_GetError() << std::endl;
+        return -1;
+    }
+
+    _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_PRESENTVSYNC);
+    if (_renderer == nullptr) {
+        std::cerr << "Failed to create the SDL Renderer: ";
+        std::cerr << SDL_GetError() << std::endl;
+        return -1;
+    }
+
+    // Set the blend mode for the renderer to enable transparency
+    SDL_SetRenderDrawBlendMode(_renderer, SDL_BLENDMODE_BLEND);
+
+    return 0;
+}
+
+void Window::pollEvents() {
+
+    SDL_Event event;
+    SDL_WaitEvent(&event);
+
+    if (event.type == SDL_QUIT) _running = false;
+
+    SDL_SetRenderDrawColor(_renderer, 123, 123, 123, 255);
+    SDL_RenderDrawRect(_renderer, &_menu);
+
+    SDL_SetRenderDrawColor(_renderer, 53, 53, 53, 255);
+    SDL_RenderFillRect(_renderer, &_board);
+
+    SDL_SetRenderDrawColor(_renderer, 121, 32, 189, 32);
+    SDL_RenderDrawRect(_renderer, &_logs);
+}
+
+void Window::present() {
+    
+    SDL_RenderPresent(_renderer);
+}
+
+void Window::clear() {
+    
+    SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
+    SDL_RenderFillRect(_renderer, &_wnd);
+}
+
+bool Window::shouldClose() const {
+
+    return !_running;
+}
