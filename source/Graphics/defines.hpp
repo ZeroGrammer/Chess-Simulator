@@ -2,9 +2,13 @@
 #ifndef _GRAPHICS_DEFINES_HPP_
 #define _GRAPHICS_DEFINES_HPP_
 
+#include "../Chess/chess.hpp"
+
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+
+#include <iostream>
 
 #define BOARD_WIDTH 800
 #define BOARD_HEIGHT 800

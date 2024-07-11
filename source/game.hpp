@@ -1,12 +1,11 @@
 #ifndef _GAME_HPP_
 #define _GAME_HPP_
 
-#include "Graphics/graphics.hpp"
-#include <iostream>
+#include "defines.hpp"
 
 namespace Game {
 
-int mainLoop();
+int run();
 
 }
 

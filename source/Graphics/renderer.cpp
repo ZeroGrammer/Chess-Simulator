@@ -48,7 +48,7 @@ void Renderer::clear() {
     SDL_RenderDrawRect(_renderer, &_logs);
 }
 
-void Renderer::fillSquare(Square square, Color color) {
+void Renderer::fillSquare(Chess::Square square, Color color) {
 
     SDL_Rect rect = { square.file * SQUARE_SIZE,
                       square.rank * SQUARE_SIZE,

@@ -7,8 +7,6 @@
 #include "renderer.hpp"
 #include "input.hpp"
 
-#include <iostream>
-
 namespace Graphics {
 
 const char APPLICATION_NAME[] = "Chess Simulator";
@@ -29,7 +27,7 @@ public:
 
     Keyboard kbd;
     Mouse mouse;
-    Renderer *renderer;
+    Renderer *rend;
 
 private:
 

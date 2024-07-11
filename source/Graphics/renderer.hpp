@@ -2,7 +2,6 @@
 #ifndef _RENDERER_HPP_
 #define _RENDERER_HPP_
 
-#include "../Chess/defines.hpp"
 #include "defines.hpp"
 
 #include <iostream>
@@ -20,7 +19,7 @@ public:
     void present();
 
     void clear();
-    void fillSquare(Square square, Color color);
+    void fillSquare(Chess::Square square, Color color);
 
 private:
 

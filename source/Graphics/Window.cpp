@@ -4,7 +4,7 @@
 using namespace Graphics;
 
 Window::Window()
-    : _window(nullptr), _running(true), renderer(nullptr) 
+    : _window(nullptr), _running(true), rend(nullptr) 
 {
     _board.x = 0;
     _board.y = 0;
@@ -27,10 +27,10 @@ Window::Window()
 
 Window::~Window() {
 
-    delete renderer;
+    delete rend;
     SDL_DestroyWindow(_window);
 
-    TTF_Init();
+    TTF_Quit();
     IMG_Quit();
     SDL_Quit();
 }
@@ -49,8 +49,11 @@ int Window::initialize() {
         return -1;
     }
 
-    renderer = new Renderer(_window, _wnd, _board, _menu, _logs);
-    if (renderer->initialize() == -1) return -1;
+    rend = new Renderer(_window, _wnd, _board, _menu, _logs);
+    if (rend->initialize() == -1) return -1;
+
+    std::memset(&kbd, 0, sizeof(Keyboard));
+    std::memset(&mouse, 0, sizeof(Keyboard));
 
     return 0;
 }
@@ -61,6 +64,8 @@ void Window::pollEvents() {
     SDL_WaitEvent(&event);
 
     if (event.type == SDL_QUIT) _running = false;
+
+    // fill the keybord and mouse events here
 }
 
 bool Window::shouldClose() const {
