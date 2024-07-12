@@ -17,7 +17,7 @@ Board::Board() {
     black.has_king_rook_moved = true;
     black.has_queen_rook_moved = true;
 
-    fenReader("RNBQKBNR/PPPPPPPP/8/8/8/8/rnbqkbnr/pppppppp w QKqk");
+    fenReader("RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr w QKqk");
 }
 
 Board::~Board() {}

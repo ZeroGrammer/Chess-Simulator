@@ -4,8 +4,6 @@
 
 #include "defines.hpp"
 
-#include <iostream>
-
 namespace Graphics {
 
 class Renderer  {
@@ -16,10 +14,16 @@ public:
     ~Renderer();
     int initialize();
 
+    void setFlippedBoard(bool value);
     void present();
 
     void clear();
     void fillSquare(Chess::Square square, Color color);
+    void renderPieceTexture(Chess::Square square, Chess::Piece piece);
+
+private:
+
+    std::string getPieceFilePath(Chess::Piece piece);
 
 private:
 
@@ -28,6 +32,8 @@ private:
     Dim _board;
     Dim _menu;
     Dim _logs;
+
+    bool _is_board_flipped;
 };
 
 }

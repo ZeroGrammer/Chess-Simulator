@@ -17,10 +17,12 @@ struct Mouse {
 
     enum Type {
         NONE = 0,
-        SQUARE_CLICKED,  // left click on the board area
-        RESET_SELECTION, // right click on the board area
-        MENU_CLICKED,    // left click on the menu area 
-        LOGS_CLICKED,    // left click on the logs area
+        RBOARD,   // right click on the board area
+        RMENU,    // right click on the menu area 
+        RLOGS,    // right click on the logs area
+        LBOARD,   // left click on the board area
+        LMENU,    // left click on the menu area 
+        LLOGS,    // left click on the logs area
     } type;
 
     int x, y;

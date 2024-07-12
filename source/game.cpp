@@ -2,19 +2,63 @@
 #include "game.hpp"
 
 static Graphics::Window window;
+static Chess::Board board;
+
 static Colors::Theme theme = Colors::REGULAR_THEME;
+static bool is_board_flipped;
+
+static void handleKeyboard() {
+    
+    if (window.kbd.type == Graphics::Keyboard::Type::FLIP_BOARD) {
+        is_board_flipped = (is_board_flipped) ? false : true;
+        window.rend->setFlippedBoard(!is_board_flipped);
+    }
+
+    if (window.kbd.type == Graphics::Keyboard::Type::RESET_BOARD) {
+        // TODO (Tejas): add a method on the board class
+        //               that does this reset board
+        std::cout << "Reset Board...\n";
+    }
+}
+
+static void handleMouse() {
+    
+    if (window.mouse.type == Graphics::Mouse::Type::RBOARD) {
+        std::cout << "Right Clicked the Board\n";
+    }
+    
+    if (window.mouse.type == Graphics::Mouse::Type::RLOGS) {
+        std::cout << "Right Clicked the Logs\n";
+    }
+    
+    if (window.mouse.type == Graphics::Mouse::Type::RMENU) {
+        std::cout << "Right Clicked the Menu\n";
+    }
+    
+    if (window.mouse.type == Graphics::Mouse::Type::LBOARD) {
+        std::cout << "Left Clicked the Board \n";
+    }
+    
+    if (window.mouse.type == Graphics::Mouse::Type::LLOGS) {
+        std::cout << "Left Clicked the Logs\n";
+    }
+    
+    if (window.mouse.type == Graphics::Mouse::Type::LMENU) {
+        std::cout << "Left Clicked the Menu\n";
+    }
+}
 
 static void drawBoard() {
 
-    for (int rank = 0; rank < 8; rank++) {
-
-        for (int file = 0; file < 8; file++) {
+    for (int rank = 0; rank < BOARD_SIZE; rank++) {
+        for (int file = 0; file < BOARD_SIZE; file++) {
 
             Chess::Square square = { rank, file };
 
-            // Color color = ((rank + file) % 2) ? 0x44AAEEFF : 0xCCCCCCFF;
-            Color color = ((rank + file) % 2) ? theme.dark_sq : theme.light_sq;
+            Graphics::Color color = ((rank + file) % 2) ? theme.dark_sq : theme.light_sq;
             window.rend->fillSquare(square, color);
+
+            window.rend->renderPieceTexture(square, board.getPieceAt(square));
         }
     }
 }
@@ -26,10 +70,15 @@ int Game::run () {
         return -1;
     }
 
+    is_board_flipped = false;
+    window.rend->setFlippedBoard(!is_board_flipped);
+
     while (!window.shouldClose()) {
 
-        window.rend->clear();
+        handleKeyboard();
+        handleMouse();
 
+        window.rend->clear();
         drawBoard();
 
         window.rend->present();

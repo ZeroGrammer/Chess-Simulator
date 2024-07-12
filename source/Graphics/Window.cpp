@@ -60,12 +60,78 @@ int Window::initialize() {
 
 void Window::pollEvents() {
 
+    std::memset(&kbd, 0, sizeof(Keyboard));
+    std::memset(&mouse, 0, sizeof(Keyboard));
+
     SDL_Event event;
     SDL_WaitEvent(&event);
 
     if (event.type == SDL_QUIT) _running = false;
 
-    // fill the keybord and mouse events here
+    if (event.type == SDL_KEYDOWN) {
+
+        SDL_Keycode key_pressed = event.key.keysym.sym;
+
+        if (key_pressed == SDLK_f)
+            kbd.type = Keyboard::Type::FLIP_BOARD;
+
+        if (key_pressed == SDLK_x)
+            kbd.type = Keyboard::Type::RESET_BOARD;
+    }
+
+    if (event.type == SDL_MOUSEBUTTONDOWN) {
+
+        SDL_MouseButtonEvent mouse_event = event.button;
+
+        mouse.x = mouse_event.x;
+        mouse.y = mouse_event.y;
+
+        if (mouse_event.button == SDL_BUTTON_RIGHT) {
+
+            // TODO(Tejas): Improv these check, they feel really hack at the moment
+
+            if (mouse.x > _board.x && mouse.y > _board.y &&
+                mouse.x < _board.w && mouse.y < _board.h)
+            {
+                mouse.type = Mouse::Type::RBOARD;
+            }
+
+            if (mouse.x > _logs.x && mouse.y > _logs.y &&
+                mouse.x < _logs.w && mouse.y < (_logs.h + _board.h))
+            {
+                mouse.type = Mouse::Type::RLOGS;
+            }
+
+            if (mouse.x > _menu.x && mouse.y > _menu.y &&
+                mouse.x < (_menu.w + _board.w) && mouse.y < _menu.h)
+            {
+                mouse.type = Mouse::Type::RMENU;
+            }
+        }
+
+        if (mouse_event.button == SDL_BUTTON_LEFT) {
+
+            // TODO(Tejas): Improv these check, they feel really hack at the moment
+
+            if (mouse.x > _board.x && mouse.y > _board.y &&
+                mouse.x < _board.w && mouse.y < _board.h)
+            {
+                mouse.type = Mouse::Type::LBOARD;
+            }
+
+            if (mouse.x > _logs.x && mouse.y > _logs.y &&
+                mouse.x < _logs.w && mouse.y < (_logs.h + _board.h))
+            {
+                mouse.type = Mouse::Type::LLOGS;
+            }
+
+            if (mouse.x > _menu.x && mouse.y > _menu.y &&
+                mouse.x < (_menu.w + _board.w) && mouse.y < _menu.h)
+            {
+                mouse.type = Mouse::Type::LMENU;
+            }
+        }
+    }
 }
 
 bool Window::shouldClose() const {
