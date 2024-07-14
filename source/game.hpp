@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-#define RGB(r,g,b) ((r<<24) | (g<<16) | (b<<8) | 0xFF)
+#define RGB(r,g,b)    ((r<<24) | (g<<16) | (b<<8) | 0xFF)
 #define RGBA(r,g,b,a) ((r<<24) | (g<<16) | (b<<8) | a)
 
 namespace Colors {

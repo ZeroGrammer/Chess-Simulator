@@ -17,34 +17,27 @@ static void handleKeyboard() {
     if (window.kbd.type == Graphics::Keyboard::Type::RESET_BOARD) {
         // TODO (Tejas): add a method on the board class
         //               that does this reset board
-        std::cout << "Reset Board...\n";
     }
 }
 
 static void handleMouse() {
     
     if (window.mouse.type == Graphics::Mouse::Type::RBOARD) {
-        std::cout << "Right Clicked the Board\n";
     }
     
     if (window.mouse.type == Graphics::Mouse::Type::RLOGS) {
-        std::cout << "Right Clicked the Logs\n";
     }
     
     if (window.mouse.type == Graphics::Mouse::Type::RMENU) {
-        std::cout << "Right Clicked the Menu\n";
     }
     
     if (window.mouse.type == Graphics::Mouse::Type::LBOARD) {
-        std::cout << "Left Clicked the Board \n";
     }
     
     if (window.mouse.type == Graphics::Mouse::Type::LLOGS) {
-        std::cout << "Left Clicked the Logs\n";
     }
     
     if (window.mouse.type == Graphics::Mouse::Type::LMENU) {
-        std::cout << "Left Clicked the Menu\n";
     }
 }
 
