@@ -16,9 +16,10 @@
 #define SQUARE_SIZE (BOARD_HEIGHT / 8)
 
 namespace Graphics {
+
 typedef SDL_Rect Dim;
-typedef SDL_Rect Rect;
 typedef uint32_t Color;
-}
+
+} // namespace Graphics
 
 #endif // _GRAPHICS_DEFINES_HPP_

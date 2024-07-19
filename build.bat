@@ -23,6 +23,7 @@ set SDL_LIBS=SDL2main.lib SDL2.lib SDL2_image.lib SDL2_mixer.lib SDL2_ttf.lib
 set SOURCE_FILES=..\source\main.cpp ^
                  ..\source\game.cpp ^
                  ..\source\Chess\board.cpp ^
+                 ..\source\Chess\move_engine.cpp ^
                  ..\source\Graphics\window.cpp ^
                  ..\source\Graphics\renderer.cpp
 

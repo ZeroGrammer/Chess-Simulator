@@ -34,6 +34,20 @@ void Renderer::setFlippedBoard(bool value) {
 
     _is_board_flipped = value;
 }
+
+Chess::Square Renderer::pixelToBoardConverter(int pixel_x, int pixel_y) {
+
+    Chess::Square square = {};
+    square.file = pixel_x / SQUARE_SIZE;
+    square.rank = pixel_y / SQUARE_SIZE;
+    if (_is_board_flipped) {
+        square.file = (BOARD_SIZE - 1) - square.file;
+        square.rank = (BOARD_SIZE - 1) - square.rank;
+    }
+
+    return square;
+}
+
 void Renderer::present() {
     
     SDL_RenderPresent(_renderer);

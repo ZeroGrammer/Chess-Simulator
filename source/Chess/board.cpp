@@ -8,25 +8,22 @@ Board::Board() {
     _turn = Player::WHITE;
     _selected_square = OFF_SQUARE;
 
-    // by default assuming that both the rooks have been moved,
-    // unless specified otherwise in the fen string
-    white.has_king_moved = true;
-    white.has_king_rook_moved = true;
-    white.has_queen_rook_moved = true;
-    black.has_king_moved = true;
-    black.has_king_rook_moved = true;
-    black.has_queen_rook_moved = true;
+    // NOTE(Tejas): by default assuming that both the rooks have been moved,
+    //              unless specified otherwise in the fen string.
+    white.has_king_moved = true;        black.has_king_moved = true;       
+    white.has_king_rook_moved = true;   black.has_king_rook_moved = true;
+    white.has_queen_rook_moved = true;  black.has_queen_rook_moved = true;
 
-    fenReader("RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr w QKqk");
+    fenReader("RNBKQBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbkqbnr w QKqk");
+    
 }
 
 Board::~Board() {}
 
 void Board::fenReader(const std::string &fen_string)  {
 
-    // fen reading starts form the top right square
-    int file = BOARD_SIZE - 1;
     int rank = 0;
+    int file = 0;
 
     // true when the position on the board is loaded and now additional
     // information about the position is being provided like castling info,
@@ -82,7 +79,7 @@ void Board::fenReader(const std::string &fen_string)  {
         // new file
         if (ch == '/') {
             rank++;
-            file = BOARD_SIZE - 1;
+            file = 0;
             continue;
         }
 
@@ -92,7 +89,7 @@ void Board::fenReader(const std::string &fen_string)  {
             int empty_squares = static_cast<int>(ch - '0');
             for (int j = 0; j < empty_squares; j++) {
                 _board[rank][file] = EMPTY_SQUARE;
-                file--;
+                file++;
             }
         }
 
@@ -128,7 +125,7 @@ void Board::fenReader(const std::string &fen_string)  {
             }
 
             _board[rank][file] = { type, color };
-            file--;
+            file++;
         }
     }
 }
@@ -138,7 +135,7 @@ bool Board::isAnySquareSelected() const {
     return (_selected_square != OFF_SQUARE );
 }
 
-Square Board::getSelectedSqaure() const {
+Square Board::getSelectedSquare() const {
 
     return _selected_square;
 }
@@ -160,7 +157,7 @@ Player Board::getTurn() const {
 
 void Board::changeTurn() {
 
-    _turn = (_turn == Player::WHITE) ? Player::WHITE : Player::BLACK;
+    _turn = (_turn == Player::WHITE) ? Player::BLACK : Player::WHITE;
 }
 
 Piece Board::getPieceAt(Square square) const {
@@ -181,36 +178,36 @@ void Board::updatePlayerInfo() {
 
         int rank = 0;
 
-        Piece queen_side_rook = getPieceAt(Square{ rank, 0 });
-        Piece king_side_rook = getPieceAt(Square{ rank, 7 });
-        Piece king = getPieceAt(Square{ rank, 4 });
+        Piece queen_rook = getPieceAt(Square{ rank, 7 });
+        Piece king = getPieceAt({ rank, 3 });
+        Piece king_rook = getPieceAt(Square{ rank, 0 });
 
-        if (queen_side_rook != WHITE_ROOK)
+        if (queen_rook != WHITE_ROOK)
             white.has_queen_rook_moved = true;
+
+        if (king_rook != WHITE_ROOK)
+            white.has_king_rook_moved = true;
 
         if (king != WHITE_KING)
             white.has_king_moved = true;
-
-        if (king_side_rook != WHITE_ROOK)
-            white.has_king_rook_moved = true;
     }
 
     else {
 
         int rank = 7;
 
-        Piece queen_side_rook = getPieceAt(Square{ rank, 0 });
-        Piece king_side_rook = getPieceAt(Square{ rank, 7 });
-        Piece king = getPieceAt(Square{ rank, 4 });
+        Piece queen_rook = getPieceAt(Square{ rank, 7 });
+        Piece king = getPieceAt({ rank, 3 });
+        Piece king_rook = getPieceAt(Square{ rank, 0 });
 
-        if (queen_side_rook != BLACK_ROOK)
-            white.has_queen_rook_moved = true;
+        if (queen_rook != BLACK_ROOK)
+            black.has_queen_rook_moved = true;
+
+        if (king_rook != BLACK_ROOK)
+            black.has_king_rook_moved = true;
 
         if (king != BLACK_KING)
-            white.has_king_moved = true;
-
-        if (king_side_rook != BLACK_ROOK)
-            white.has_king_rook_moved = true;
+            black.has_king_moved = true;
     }
 }
 
@@ -220,7 +217,10 @@ void Board::castleKingSide(Player player) {
 
     if (player == Player::BLACK) rank = 7;
 
-    Square king_pos = { rank, 4 };
+    // NOTE(Tejas): This methods is only being called once it is certain that
+    //              the king can castle King side and the king and rook are on 
+    //              their starting positions.
+    Square king_pos = { rank, 3 };
     Square rook_pos = { rank, 0 };
 
     Piece king = getPieceAt(king_pos);
@@ -229,8 +229,8 @@ void Board::castleKingSide(Player player) {
     _board[king_pos.rank][king_pos.file] = EMPTY_SQUARE;
     _board[rook_pos.rank][rook_pos.file] = EMPTY_SQUARE;
 
-    king_pos.file += 2;
-    rook_pos.file -= 2;
+    king_pos.file -= 2;
+    rook_pos.file += 2;
 
     _board[king_pos.rank][king_pos.file] = king;
     _board[rook_pos.rank][rook_pos.file] = rook;
@@ -242,8 +242,11 @@ void Board::castleQueenSide(Player player) {
 
     if (player == Player::BLACK) rank = 7;
 
-    Square king_pos = { rank, 4 };
-    Square rook_pos = { rank, 0 };
+    // NOTE(Tejas): This methods is only being called once it is certain that
+    //              the king can castle Queen side and the king and rook are on 
+    //              their starting positions.
+    Square king_pos = { rank, 3 };
+    Square rook_pos = { rank, 7 };
 
     Piece king = getPieceAt(king_pos);
     Piece rook = getPieceAt(rook_pos);
@@ -251,8 +254,8 @@ void Board::castleQueenSide(Player player) {
     _board[king_pos.rank][king_pos.file] = EMPTY_SQUARE;
     _board[rook_pos.rank][rook_pos.file] = EMPTY_SQUARE;
 
-    king_pos.file -= 2;
-    rook_pos.file += 3;
+    king_pos.file += 2;
+    rook_pos.file -= 3;
 
     _board[king_pos.rank][king_pos.file] = king;
     _board[rook_pos.rank][rook_pos.file] = rook;

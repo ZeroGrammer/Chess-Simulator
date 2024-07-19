@@ -4,33 +4,6 @@
 
 #include "defines.hpp"
 
-/*
-  NOTE(Tejas): The Chess board is stuctured so that 0, 0 (i.e, rank 0 file a) is
-               at the top right, which is the promotion square for black.
-
-                  (7) (6) (5) (4) (3) (2) (1) (0)
-
-                   h   g   f   e   d   c   b   a
-                 +---+---+---+---+---+---+---+---+
-          (0)  1 | R | B | N | K | Q | B | N | R |
-                 +---+---+---+---+---+---+---+---+
-          (1)  2 | P | P | P | P | P | P | P | P |
-                 +---+---+---+---+---+---+---+---+
-          (2)  3 |   |   |   |   |   |   |   |   |
-                 +---+---+---+---+---+---+---+---+
-          (3)  4 |   |   |   |   |   |   |   |   |
-                 +---+---+---+---+---+---+---+---+
-          (4)  5 |   |   |   |   |   |   |   |   |
-                 +---+---+---+---+---+---+---+---+
-          (5)  6 |   |   |   |   |   |   |   |   |
-                 +---+---+---+---+---+---+---+---+
-          (6)  7 | p | p | p | p | p | p | p | p |
-                 +---+---+---+---+---+---+---+---+
-          (7)  8 | r | b | n | k | q | b | n | r |
-                 +---+---+---+---+---+---+---+---+
- */
-
-    
 namespace Chess {
 
 struct PlayerInfo {
@@ -49,7 +22,7 @@ public:
     void fenReader(const std::string &fenstring);
 
     bool isAnySquareSelected() const;
-    Square getSelectedSqaure() const;
+    Square getSelectedSquare() const;
     void setSelection(Square square);
     void resetSelection();
 
@@ -77,6 +50,6 @@ private:
     Player _turn;
 };
     
-}
+} // namespace Chess
 
 #endif // _BOARD_HPP_

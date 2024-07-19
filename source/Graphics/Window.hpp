@@ -41,6 +41,6 @@ private:
     SDL_Window *_window;
 };
     
-}
+} // namespace Graphics
 
 #endif // _WINDOW_HPP

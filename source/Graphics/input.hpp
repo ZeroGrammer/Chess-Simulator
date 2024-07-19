@@ -28,6 +28,6 @@ struct Mouse {
     int x, y;
 };
     
-}
+} // namepace Graphics
 
 #endif // _INPUT_HPP_

@@ -18,6 +18,9 @@ public:
     void present();
 
     void clear();
+
+    Chess::Square pixelToBoardConverter(int pixel_x, int pixel_y);
+
     void fillSquare(Chess::Square square, Color color);
     void renderPieceTexture(Chess::Square square, Chess::Piece piece);
 
@@ -36,6 +39,6 @@ private:
     bool _is_board_flipped;
 };
 
-}
+} // namespace Graphics
 
 #endif // _RENDERER_HPP_

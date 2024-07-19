@@ -1,81 +1,174 @@
 
 #include "game.hpp"
 
-static Graphics::Window window;
-static Chess::Board board;
+static Window G_window;
+static Board G_board;
 
-static Colors::Theme theme = Colors::REGULAR_THEME;
-static bool is_board_flipped;
+static Colors::Theme theme = Colors::REGULAR_ONE;
 
-static void handleKeyboard() {
+// NOTE(Tejas): The flipped board is true when the White pieces appear at the 
+//              bottom, and false when the Black pieces are at the bottom
+static bool G_is_board_flipped;
+
+static void selectSquare(Square clicked_square) {
     
-    if (window.kbd.type == Graphics::Keyboard::Type::FLIP_BOARD) {
-        is_board_flipped = (is_board_flipped) ? false : true;
-        window.rend->setFlippedBoard(!is_board_flipped);
+    Piece clicked_piece = G_board.getPieceAt(clicked_square);
+
+    if (clicked_piece.color == G_board.getTurn()) {
+        G_board.setSelection(clicked_square);
+    }
+    else {
+        G_board.resetSelection();
+        return;
+    }
+}
+
+static void movePiece(Square clicked_square) {
+    
+    // NOTE(Tejas): move the piece from the selected square to the clicked square
+    //              only if the clicked square is a legal square that the selected
+    //              piece can move to
+
+    Square selected_square = G_board.getSelectedSquare();
+    Player player_turn = G_board.getTurn();
+
+    bool is_valid = MoveEngine::isValidMove(G_board, selected_square, clicked_square);
+
+    if (is_valid) {
+
+        G_board.movePiece(selected_square, clicked_square);
+
+        // checking for pawn promotion
+        Square promotion_square = MoveEngine::canPromote(G_board, player_turn);
+        if (promotion_square != OFF_SQUARE) {
+
+            // for now promotes to just Queen.
+            Piece promote_to = { Piece::Type::QUEEN, player_turn};
+            G_board.promotePawn(promotion_square, promote_to);
+        }
+
+        G_board.changeTurn();
     }
 
-    if (window.kbd.type == Graphics::Keyboard::Type::RESET_BOARD) {
-        // TODO (Tejas): add a method on the board class
-        //               that does this reset board
+    Square king_side_castle = MoveEngine::canCastleKingSide(G_board, player_turn);
+    Square queen_side_castle = MoveEngine::canCastleQueenSide(G_board, player_turn);
+    if (king_side_castle == clicked_square) {
+        G_board.castleKingSide(player_turn);
+        G_board.changeTurn();
+    }
+            
+    if (queen_side_castle == clicked_square) {
+        G_board.castleQueenSide(player_turn);
+        G_board.changeTurn();
     }
 }
 
 static void handleMouse() {
     
-    if (window.mouse.type == Graphics::Mouse::Type::RBOARD) {
+    if (G_window.mouse.type == Mouse::Type::RBOARD) {
+        G_board.resetSelection();
+        return;
     }
     
-    if (window.mouse.type == Graphics::Mouse::Type::RLOGS) {
+    else if (G_window.mouse.type == Mouse::Type::RLOGS) {}
+    
+    else if (G_window.mouse.type == Mouse::Type::RMENU) {}
+    
+    else if (G_window.mouse.type == Mouse::Type::LBOARD) {
+
+        Square clicked_square = G_window.rend->pixelToBoardConverter(G_window.mouse.x, G_window.mouse.y);
+
+        if (!G_board.isAnySquareSelected()) {
+            selectSquare(clicked_square);
+            return;
+        }
+
+        else {
+            movePiece(clicked_square);
+            G_board.updatePlayerInfo();
+            G_board.resetSelection();
+        }
     }
     
-    if (window.mouse.type == Graphics::Mouse::Type::RMENU) {
-    }
+    else if (G_window.mouse.type == Mouse::Type::LLOGS) {}
     
-    if (window.mouse.type == Graphics::Mouse::Type::LBOARD) {
-    }
+    else if (G_window.mouse.type == Mouse::Type::LMENU) {}
+}
+
+static void handleKeyboard() {
     
-    if (window.mouse.type == Graphics::Mouse::Type::LLOGS) {
+    if (G_window.kbd.type == Keyboard::Type::FLIP_BOARD) {
+        G_is_board_flipped = (G_is_board_flipped) ? false : true;
+        G_window.rend->setFlippedBoard(!G_is_board_flipped);
     }
-    
-    if (window.mouse.type == Graphics::Mouse::Type::LMENU) {
+
+    else if (G_window.kbd.type == Keyboard::Type::RESET_BOARD) {
+        // TODO (Tejas): add a method on the board class
+        //               that does this reset board
     }
 }
 
 static void drawBoard() {
 
+    Square selected_square = G_board.getSelectedSquare();
+
     for (int rank = 0; rank < BOARD_SIZE; rank++) {
         for (int file = 0; file < BOARD_SIZE; file++) {
 
-            Chess::Square square = { rank, file };
+            Square square = { rank, file };
 
-            Graphics::Color color = ((rank + file) % 2) ? theme.dark_sq : theme.light_sq;
-            window.rend->fillSquare(square, color);
+            Color color = ((rank + file) % 2) ? theme.dark_sq : theme.light_sq;
+            G_window.rend->fillSquare(square, color);
 
-            window.rend->renderPieceTexture(square, board.getPieceAt(square));
+            if (selected_square == square)
+                G_window.rend->fillSquare(selected_square, theme.highlight_sq);
+
+            G_window.rend->renderPieceTexture(square, G_board.getPieceAt(square));
+
+            if (selected_square != OFF_SQUARE) {
+                bool is_valid = MoveEngine::isValidMove(G_board, selected_square, square);
+                if (is_valid)
+                    G_window.rend->fillSquare(square, theme.legal_sq);
+
+                // std::cout << "{ " << selected_square.rank << "," << selected_square.file << " }\n";
+            }
         }
+    }
+
+    // highlights castle square(s) if available
+    if (G_board.getPieceAt(selected_square).type == Piece::Type::KING) {
+
+        Square king_side_castle_square = MoveEngine::canCastleKingSide(G_board, G_board.getPieceAt(selected_square).color);
+        if (king_side_castle_square != OFF_SQUARE)
+            G_window.rend->fillSquare(king_side_castle_square, theme.legal_sq);
+
+        Square queen_side_castle_square = MoveEngine::canCastleQueenSide(G_board, G_board.getPieceAt(selected_square).color);
+        if (queen_side_castle_square != OFF_SQUARE)
+            G_window.rend->fillSquare(queen_side_castle_square, theme.legal_sq);
     }
 }
 
-int Game::run () {
+int Game::run() {
 
-    if (window.initialize() == -1) {
+    if (G_window.initialize() == -1) {
         std::cerr << "An error occured while initializing the Window Class...\n";
         return -1;
     }
 
-    is_board_flipped = false;
-    window.rend->setFlippedBoard(!is_board_flipped);
+    G_is_board_flipped = false;
+    G_window.rend->setFlippedBoard(!G_is_board_flipped);
 
-    while (!window.shouldClose()) {
+    while (!G_window.shouldClose()) {
 
         handleKeyboard();
         handleMouse();
 
-        window.rend->clear();
+        G_window.rend->clear();
+
         drawBoard();
 
-        window.rend->present();
-        window.pollEvents();
+        G_window.rend->present();
+        G_window.pollEvents();
     }
 
     return 0;

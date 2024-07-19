@@ -3,6 +3,7 @@
 #define _CHESS_DEFINES_HPP
 
 #include <iostream>
+#include <cmath>
 #include <string>
 
 namespace Chess {
@@ -67,6 +68,6 @@ constexpr Piece BLACK_KING   = { Piece::Type::KING  , Piece::Color::BLACK };
 
 typedef Piece::Color Player;
 
-}
+} // namespace Chess
 
 #endif // _CHESS_DEFINES_HPP
