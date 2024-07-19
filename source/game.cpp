@@ -103,8 +103,7 @@ static void handleKeyboard() {
     }
 
     else if (G_window.kbd.type == Keyboard::Type::RESET_BOARD) {
-        // TODO (Tejas): add a method on the board class
-        //               that does this reset board
+        G_board.resetBoard();
     }
 }
 
@@ -129,8 +128,6 @@ static void drawBoard() {
                 bool is_valid = MoveEngine::isValidMove(G_board, selected_square, square);
                 if (is_valid)
                     G_window.rend->fillSquare(square, theme.legal_sq);
-
-                // std::cout << "{ " << selected_square.rank << "," << selected_square.file << " }\n";
             }
         }
     }

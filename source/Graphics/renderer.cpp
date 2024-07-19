@@ -57,15 +57,6 @@ void Renderer::clear() {
     
     SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
     SDL_RenderFillRect(_renderer, &_wnd);
-
-    SDL_SetRenderDrawColor(_renderer, 123, 123, 123, 255);
-    SDL_RenderDrawRect(_renderer, &_menu);
-
-    SDL_SetRenderDrawColor(_renderer, 53, 53, 53, 255);
-    SDL_RenderFillRect(_renderer, &_board);
-
-    SDL_SetRenderDrawColor(_renderer, 121, 32, 189, 32);
-    SDL_RenderDrawRect(_renderer, &_logs);
 }
 
 void Renderer::fillSquare(Chess::Square square, Color color) {

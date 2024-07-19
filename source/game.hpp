@@ -21,8 +21,8 @@ struct Theme {
     Graphics::Color legal_sq;
 };
 
-constexpr Theme REGULAR_ONE = { 0x333333FF, 0xCCCCCCFF, 0x6999FFFF, 0x88888888 };
-constexpr Theme REGULAR_TWO = { 0x333333AA, 0x666666AA, 0x336666AA, 0x666699AA };
+constexpr Theme REGULAR_ONE = { 0x333333FF, 0xCCCCCCFF, 0x6999FFFF, 0x69BBFF99 };
+constexpr Theme REGULAR_TWO = { 0x996666FF, 0xFFCCCCFF, 0xFFAAEEFF, 0xFFCCFF99 };
 
 } // namespace Colors
 

@@ -4,6 +4,42 @@
 
 #include "defines.hpp"
 
+/*
+  NOTE(Tejas): the board starts (i.e. when rank = 0 and file = 0) at top left
+               square, where there is a White King Side Rook.
+
+  NOTE(Tejas): The conventional Chess considers top right corner to be 0, 0
+              (i.e, rank = 1 and file = a), but it ease to visualize rendering
+              when using the following way (atleast for me!)... 
+
+                (0) (1) (2) (3) (4) (5) (6) (7)
+
+                 h   g   f   e   d   c   b   a
+               +---+---+---+---+---+---+---+---+
+        (0)  1 | R | N | B | K | Q | B | N | R |
+               +---+---+---+---+---+---+---+---+
+        (1)  2 | P | P | P | P | P | P | P | P |
+               +---+---+---+---+---+---+---+---+
+        (2)  3 |   |   |   |   |   |   |   |   |
+               +---+---+---+---+---+---+---+---+
+        (3)  4 |   |   |   |   |   |   |   |   |
+               +---+---+---+---+---+---+---+---+
+        (4)  5 |   |   |   |   |   |   |   |   |
+               +---+---+---+---+---+---+---+---+
+        (5)  6 |   |   |   |   |   |   |   |   |
+               +---+---+---+---+---+---+---+---+
+        (6)  7 | p | p | p | p | p | p | p | p |
+               +---+---+---+---+---+---+---+---+
+        (7)  8 | r | n | b | k | q | b | n | r |
+               +---+---+---+---+---+---+---+---+
+
+  NOTE(Tejas): Flip Board is a pure Visual effect, the white pawns always need
+               to promote at the 7th rank and the black pawns always need
+               to promote at the 0th rank.
+
+ */
+
+
 namespace Chess {
 
 struct PlayerInfo {
@@ -31,6 +67,8 @@ public:
 
     Piece getPieceAt(Square square) const;
     void movePiece(Square from, Square to);
+
+    void resetBoard();
 
     void updatePlayerInfo();
     void castleKingSide(Player player);

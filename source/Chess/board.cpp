@@ -15,7 +15,6 @@ Board::Board() {
     white.has_queen_rook_moved = true;  black.has_queen_rook_moved = true;
 
     fenReader("RNBKQBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbkqbnr w QKqk");
-    
 }
 
 Board::~Board() {}
@@ -170,6 +169,21 @@ void Board::movePiece(Square from, Square to) {
     Piece piece_to_move = getPieceAt(from);
     _board[from.rank][from.file] = EMPTY_SQUARE;
     _board[to.rank][to.file] = piece_to_move;
+}
+
+void Board::resetBoard() {
+
+    for (int rank = 0; rank < BOARD_SIZE; rank++) {
+
+        for (int file = 0; file < BOARD_SIZE; file++) {
+
+            _board[rank][file] = EMPTY_SQUARE;
+        }
+    }
+
+    _selected_square = OFF_SQUARE;
+
+    fenReader("RNBKQBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbkqbnr w QKqk");
 }
 
 void Board::updatePlayerInfo() {
