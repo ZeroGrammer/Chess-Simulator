@@ -11,18 +11,13 @@ Window::Window()
     _board.w = BOARD_WIDTH;
     _board.h = BOARD_HEIGHT;
 
-    _logs.x = 0;
-    _logs.y = _board.h;
-    _logs.w = _board.w;
-    _logs.h = (2 * SQUARE_SIZE);
-
     _menu.x = _board.w;
     _menu.y = 0;
-    _menu.w = (4 * SQUARE_SIZE);
-    _menu.h = _board.h + _logs.h;
+    _menu.w = 3 * SQUARE_SIZE;
+    _menu.h = _board.h;
 
     _wnd.w = _board.w + _menu.w;
-    _wnd.h = _menu.h;
+    _wnd.h = _board.h;
 }
 
 Window::~Window() {
@@ -49,7 +44,7 @@ int Window::initialize() {
         return -1;
     }
 
-    rend = new Renderer(_window, _wnd, _board, _menu, _logs);
+    rend = new Renderer(_window, _wnd, _board, _menu);
     if (rend->initialize() == -1) return -1;
 
     std::memset(&kbd, 0, sizeof(Keyboard));
@@ -96,13 +91,7 @@ void Window::pollEvents() {
                 mouse.type = Mouse::Type::RBOARD;
             }
 
-            if (mouse.x > _logs.x && mouse.y > _logs.y &&
-                mouse.x < _logs.w && mouse.y < (_logs.h + _board.h))
-            {
-                mouse.type = Mouse::Type::RLOGS;
-            }
-
-            if (mouse.x > _menu.x && mouse.y > _menu.y &&
+            if (mouse.x > _menu.x && _menu.y > _menu.y &&
                 mouse.x < (_menu.w + _board.w) && mouse.y < _menu.h)
             {
                 mouse.type = Mouse::Type::RMENU;
@@ -117,12 +106,6 @@ void Window::pollEvents() {
                 mouse.x < _board.w && mouse.y < _board.h)
             {
                 mouse.type = Mouse::Type::LBOARD;
-            }
-
-            if (mouse.x > _logs.x && mouse.y > _logs.y &&
-                mouse.x < _logs.w && mouse.y < (_logs.h + _board.h))
-            {
-                mouse.type = Mouse::Type::LLOGS;
             }
 
             if (mouse.x > _menu.x && mouse.y > _menu.y &&

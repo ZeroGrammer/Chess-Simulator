@@ -19,10 +19,8 @@ struct Mouse {
         NONE = 0,
         RBOARD,   // right click on the board area
         RMENU,    // right click on the menu area 
-        RLOGS,    // right click on the logs area
         LBOARD,   // left click on the board area
         LMENU,    // left click on the menu area 
-        LLOGS,    // left click on the logs area
     } type;
 
     int x, y;

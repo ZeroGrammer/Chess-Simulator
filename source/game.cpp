@@ -3,6 +3,7 @@
 
 static Window G_window;
 static Board G_board;
+static bool G_game_over;
 
 static Colors::Theme theme = Colors::REGULAR_ONE;
 
@@ -70,10 +71,6 @@ static void handleMouse() {
         return;
     }
     
-    else if (G_window.mouse.type == Mouse::Type::RLOGS) {}
-    
-    else if (G_window.mouse.type == Mouse::Type::RMENU) {}
-    
     else if (G_window.mouse.type == Mouse::Type::LBOARD) {
 
         Square clicked_square = G_window.rend->pixelToBoardConverter(G_window.mouse.x, G_window.mouse.y);
@@ -89,8 +86,8 @@ static void handleMouse() {
             G_board.resetSelection();
         }
     }
-    
-    else if (G_window.mouse.type == Mouse::Type::LLOGS) {}
+
+    else if (G_window.mouse.type == Mouse::Type::RMENU) {}
     
     else if (G_window.mouse.type == Mouse::Type::LMENU) {}
 }
@@ -104,7 +101,25 @@ static void handleKeyboard() {
 
     else if (G_window.kbd.type == Keyboard::Type::RESET_BOARD) {
         G_board.resetBoard();
+        G_game_over = false;
     }
+}
+
+static Player checkGameOver() {
+
+    Player winner = Player::NONE;
+
+    if (MoveEngine::isInCheckMate(G_board, Piece::Color::WHITE)) {
+        G_game_over = true;
+        winner = Player::BLACK;
+    }
+
+    if (MoveEngine::isInCheckMate(G_board, Piece::Color::BLACK)) {
+        G_game_over = true;
+        winner = Player::WHITE;
+    }
+
+    return winner;
 }
 
 static void drawBoard() {
@@ -112,6 +127,7 @@ static void drawBoard() {
     Square selected_square = G_board.getSelectedSquare();
 
     for (int rank = 0; rank < BOARD_SIZE; rank++) {
+
         for (int file = 0; file < BOARD_SIZE; file++) {
 
             Square square = { rank, file };
@@ -155,14 +171,28 @@ int Game::run() {
     G_is_board_flipped = false;
     G_window.rend->setFlippedBoard(!G_is_board_flipped);
 
+    G_game_over = false;
+
+    Player winner = Player::NONE;
+
     while (!G_window.shouldClose()) {
 
+        if (!G_game_over) handleMouse();
         handleKeyboard();
-        handleMouse();
+
+        if (!G_game_over) winner = checkGameOver();
 
         G_window.rend->clear();
-
         drawBoard();
+
+        if (winner != Player::NONE) {
+
+            if (winner == Player::WHITE)
+                G_window.rend->displayFog(Colors::WHITE_FOG);
+
+            if (winner == Player::BLACK)
+                G_window.rend->displayFog(Colors::BLACK_FOG);
+        }
 
         G_window.rend->present();
         G_window.pollEvents();

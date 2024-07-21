@@ -10,7 +10,7 @@ class Renderer  {
 
 public:
 
-    Renderer(SDL_Window *window, Dim wnd, Dim board, Dim menu, Dim logs);
+    Renderer(SDL_Window *window, Dim wnd, Dim board, Dim menu);
     ~Renderer();
     int initialize();
 
@@ -23,6 +23,7 @@ public:
 
     void fillSquare(Chess::Square square, Color color);
     void renderPieceTexture(Chess::Square square, Chess::Piece piece);
+    void displayFog(Color color);
 
 private:
 
@@ -34,7 +35,8 @@ private:
     Dim _wnd;
     Dim _board;
     Dim _menu;
-    Dim _logs;
+
+    TTF_Font *_menu_font;
 
     bool _is_board_flipped;
 };

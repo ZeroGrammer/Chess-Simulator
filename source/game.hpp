@@ -4,10 +4,10 @@
 #include "Graphics/graphics.hpp"
 #include "Chess/chess.hpp"
 
+#include <iostream>
+
 using namespace Graphics;
 using namespace Chess;
-
-#include <iostream>
 
 #define RGB(r,g,b)    ((r<<24) | (g<<16) | (b<<8) | 0xFF)
 #define RGBA(r,g,b,a) ((r<<24) | (g<<16) | (b<<8) | a)
@@ -20,6 +20,9 @@ struct Theme {
     Graphics::Color highlight_sq;
     Graphics::Color legal_sq;
 };
+
+constexpr Graphics::Color WHITE_FOG = 0xFFFFFF88;
+constexpr Graphics::Color BLACK_FOG = 0x00000088;
 
 constexpr Theme REGULAR_ONE = { 0x333333FF, 0xCCCCCCFF, 0x6999FFFF, 0x69BBFF99 };
 constexpr Theme REGULAR_TWO = { 0x996666FF, 0xFFCCCCFF, 0xFFAAEEFF, 0xFFCCFF99 };

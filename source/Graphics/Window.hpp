@@ -35,7 +35,6 @@ private:
 
     Dim _board;
     Dim _menu;
-    Dim _logs;
     Dim _wnd;
 
     SDL_Window *_window;

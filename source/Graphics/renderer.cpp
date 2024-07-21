@@ -3,10 +3,10 @@
 
 using namespace Graphics;
 
-Renderer::Renderer(SDL_Window *window, Dim wnd, Dim board, Dim menu, Dim logs)
+Renderer::Renderer(SDL_Window *window, Dim wnd, Dim board, Dim menu)
     : _renderer(nullptr),
-      _wnd(wnd), _board(board), _menu(menu), _logs(logs),
-      _is_board_flipped(false)
+      _wnd(wnd), _board(board), _menu(menu),
+      _is_board_flipped(false), _menu_font(nullptr)
 {
     _renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
 }
@@ -20,6 +20,14 @@ int Renderer::initialize() {
     
     if (_renderer == nullptr) {
         std::cerr << "Failed to create the SDL Renderer: ";
+        std::cerr << SDL_GetError() << std::endl;
+        return -1;
+    }
+
+    _menu_font = TTF_OpenFont("./assets/fonts/Inconsolata.ttf", 20);
+
+    if (_menu_font == nullptr) {
+        std::cerr << "Failed to Load the Font: ";
         std::cerr << SDL_GetError() << std::endl;
         return -1;
     }
@@ -57,6 +65,9 @@ void Renderer::clear() {
     
     SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
     SDL_RenderFillRect(_renderer, &_wnd);
+
+    SDL_SetRenderDrawColor(_renderer, 22, 26, 29, 255);
+    SDL_RenderFillRect(_renderer, &_menu);
 }
 
 void Renderer::fillSquare(Chess::Square square, Color color) {
@@ -149,4 +160,15 @@ void Renderer::renderPieceTexture(Chess::Square square, Chess::Piece piece) {
     SDL_RenderCopy(_renderer, piece_texture, NULL, &rect);
     SDL_DestroyTexture(piece_texture);
     SDL_FreeSurface(piece_image);
+}
+
+void Renderer::displayFog(Color color) {
+    
+    uint8_t r = (color >> 24) & 0xFF;
+    uint8_t g = (color >> 16) & 0xFF;
+    uint8_t b = (color >> 8) & 0xFF;
+    uint8_t a = color & 0xFF;
+
+    SDL_SetRenderDrawColor(_renderer, r, g, b, a);
+    SDL_RenderFillRect(_renderer, &_board);
 }
