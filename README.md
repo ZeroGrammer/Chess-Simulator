@@ -14,10 +14,15 @@ a simple chess simulator built using the SDL2 graphics library
 
 ### How to build the project
 
-There is install-dependencies.bat script file in the repo that can be used to install SDL2, SDL2_image and SDL2_tff using curl. \
+There is install-dependencies.bat script file in the repo that can be used to install SDL2, SDL2_image and SDL2_tff using curl.
+
+```console
+$ .\install-dependencies.bat
+```
+
 You can manually install all the dependencies from the links given above and place them in the middleware/SDL2 folder.
 
-To compile this application make sure you have the Visual Stuio C++ compiler 
+To compile this application make sure you have the Visual Stuio C++ compiler \
 installed, and your running a terminal instance that recognises cl.exe
 
 To compile the program call the build.bat script from the main directory:
