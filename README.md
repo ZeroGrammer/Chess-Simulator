@@ -9,7 +9,6 @@ a simple chess simulator built using the SDL2 graphics library
 
 [SDL2](https://github.com/libsdl-org/SDL/releases/tag/release-2.28.1) \
 [SDL2_image](https://github.com/libsdl-org/SDL_image/releases/tag/release-2.6.3) \
-[SDL2](https://github.com/libsdl-org/SDL_ttf/releases/tag/release-2.20.1) 
 
 (Target operating system: Windows)
 
@@ -34,3 +33,8 @@ To run this application:
 ```console
 $ .\bin\chess.exe
 ```
+
+### Keybinds for the application
+
+ - x -> Reset Position on the board
+ - f -> Flip the board
