@@ -33,9 +33,8 @@ private:
 
     bool _running;
 
-    Dim _board;
-    Dim _menu;
-    Dim _wnd;
+    int _width;
+    int _height;
 
     SDL_Window *_window;
 };

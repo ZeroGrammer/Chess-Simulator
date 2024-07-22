@@ -11,13 +11,12 @@
 #include <iostream>
 #include <string>
 
-#define BOARD_WIDTH 800
-#define BOARD_HEIGHT 800
-#define SQUARE_SIZE (BOARD_HEIGHT / 8)
+#define WND_WIDTH 800
+#define WND_HEIGHT 800
+#define SQUARE_SIZE (WND_HEIGHT / 8)
 
 namespace Graphics {
 
-typedef SDL_Rect Dim;
 typedef uint32_t Color;
 
 } // namespace Graphics

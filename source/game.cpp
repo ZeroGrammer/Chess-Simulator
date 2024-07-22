@@ -1,6 +1,9 @@
 
 #include "game.hpp"
 
+using namespace Graphics;
+using namespace Chess;
+
 static Window G_window;
 static Board G_board;
 static bool G_game_over;
@@ -66,12 +69,12 @@ static void movePiece(Square clicked_square) {
 
 static void handleMouse() {
     
-    if (G_window.mouse.type == Mouse::Type::RBOARD) {
+    if (G_window.mouse.type == Mouse::Type::RCLICK) {
         G_board.resetSelection();
         return;
     }
     
-    else if (G_window.mouse.type == Mouse::Type::LBOARD) {
+    else if (G_window.mouse.type == Mouse::Type::LCLICK) {
 
         Square clicked_square = G_window.rend->pixelToBoardConverter(G_window.mouse.x, G_window.mouse.y);
 
@@ -86,10 +89,6 @@ static void handleMouse() {
             G_board.resetSelection();
         }
     }
-
-    else if (G_window.mouse.type == Mouse::Type::RMENU) {}
-    
-    else if (G_window.mouse.type == Mouse::Type::LMENU) {}
 }
 
 static void handleKeyboard() {
@@ -183,6 +182,7 @@ int Game::run() {
         if (!G_game_over) winner = checkGameOver();
 
         G_window.rend->clear();
+
         drawBoard();
 
         if (winner != Player::NONE) {

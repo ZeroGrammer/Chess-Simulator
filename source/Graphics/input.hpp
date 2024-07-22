@@ -17,10 +17,8 @@ struct Mouse {
 
     enum Type {
         NONE = 0,
-        RBOARD,   // right click on the board area
-        RMENU,    // right click on the menu area 
-        LBOARD,   // left click on the board area
-        LMENU,    // left click on the menu area 
+        LCLICK,
+        RCLICK
     } type;
 
     int x, y;
