@@ -23,10 +23,10 @@ pushd bin
 set FLAGS=/EHsc /Zi /W4
 
 set INCLUDE_PATH=/I"..\middleware\SDL2\SDL2-2.28.1\include"^
-                 /I"..\middleware\SDL2\SDL2_image-2.6.3\include"^
+                 /I"..\middleware\SDL2\SDL2_image-2.6.3\include"
 
 set LIB_PATH=/LIBPATH:"..\middleware\SDL2\SDL2-2.28.1\lib\x64"^
-             /LIBPATH:"..\middleware\SDL2\SDL2_image-2.6.3\lib\x64"^
+             /LIBPATH:"..\middleware\SDL2\SDL2_image-2.6.3\lib\x64"
 
 set SYSTEM_LIBS=Shell32.lib kernel32.lib 
 
