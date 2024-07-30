@@ -277,7 +277,56 @@ void Board::castleQueenSide(Player player) {
 
 void Board::promotePawn(Square promotion_square, Piece promote_to) {
     
-    // assumes that the pawn has already been moved to the promotion square and is
-    // waiting to be transformed into a minor piece (promote_to)
+    // NOTE(Tejas): assumes that the pawn has already been moved to the promotion
+    //              square and is waiting to be transformed into a minor piece (promote_to)
     _board[promotion_square.rank][promotion_square.file] = promote_to;
+}
+
+void Board::enPassent(Square square, Side side) {
+  
+    // NOTE(Tejas): Assumes the piece on the given square is a Pawn
+    Player player = getPieceAt(square).color;
+
+    // this is the square that the pawn needs to move to
+    int move_rank = square.rank;
+    int move_file = square.file;
+
+    // this is the square that the other pawn needs to be captured from
+    int pn_rank = square.rank;
+    int pn_file = square.file;
+
+    // adjusting proper ranks and files
+    if (player == Player::WHITE) {
+
+        move_rank += 1;
+
+        if (side == LEFT) {
+            move_file += 1;   
+            pn_file += 1;
+        }
+
+        if (side == RIGHT) {
+            move_file -= 1;   
+            pn_file -= 1;
+        }
+    }
+
+    if (player == Player::BLACK) {
+        
+        move_rank -= 1;
+
+        if (side == LEFT) {
+            move_file -= 1;   
+            pn_file -= 1;
+        }
+
+        if (side == RIGHT) {
+            move_file += 1;   
+            pn_file += 1;
+        }
+    }
+
+    _board[move_rank][move_file] = Piece{ Piece::Type::PAWN, player };
+    _board[square.rank][square.file] = EMPTY_SQUARE;
+    _board[pn_rank][pn_file] = EMPTY_SQUARE;
 }

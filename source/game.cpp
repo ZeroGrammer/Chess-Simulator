@@ -8,7 +8,7 @@ static Window G_window;
 static Board G_board;
 static bool G_game_over;
 
-static Colors::Theme theme = Colors::REGULAR_ONE;
+static Colors::Theme theme = Colors::REGULAR_TWO;
 
 // NOTE(Tejas): The flipped board is true when the White pieces appear at the 
 //              bottom, and false when the Black pieces are at the bottom

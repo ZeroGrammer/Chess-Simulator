@@ -76,6 +76,14 @@ public:
 
     void promotePawn(Square promotion_square, Piece promote_to);
 
+    enum Side {
+        NONE = 0,
+        LEFT,
+        RIGHT
+    };
+
+    void enPassent(Square square, Side side);
+
 public:
 
     PlayerInfo white;

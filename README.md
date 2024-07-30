@@ -14,7 +14,7 @@ a simple chess simulator built using the SDL2 graphics library
 
 ### How to build the project
 
-There is install-dependencies.bat script file in the repo that can be used to install SDL2, SDL2_image and SDL2_tff using curl.
+There is install-dependencies.bat script file in the repo that can be used to install SDL2 and SDL2_image using curl.
 
 ```console
 $ .\install-dependencies.bat
