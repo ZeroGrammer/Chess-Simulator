@@ -60,6 +60,26 @@ void Window::pollEvents() {
 
         if (key_pressed == SDLK_x)
             kbd.type = Keyboard::Type::RESET_BOARD;
+
+        if (key_pressed == SDLK_1) {
+            kbd.piece_type = Keyboard::PieceType::QUEEN;
+            kbd.type = Keyboard::Type::PROMOTE_TO;
+        }
+
+        if (key_pressed == SDLK_2) {
+            kbd.piece_type = Keyboard::PieceType::ROOK;
+            kbd.type = Keyboard::Type::PROMOTE_TO;
+        }
+
+        if (key_pressed == SDLK_3) {
+            kbd.piece_type = Keyboard::PieceType::BISHOP;
+            kbd.type = Keyboard::Type::PROMOTE_TO;
+        }
+
+        if (key_pressed == SDLK_4) {
+            kbd.piece_type = Keyboard::PieceType::KNIGHT;
+            kbd.type = Keyboard::Type::PROMOTE_TO;
+        }
     }
 
     if (event.type == SDL_MOUSEBUTTONDOWN) {
@@ -69,14 +89,14 @@ void Window::pollEvents() {
         mouse.x = mouse_event.x;
         mouse.y = mouse_event.y;
 
-        if (mouse_event.button == SDL_BUTTON_RIGHT) {
-
+        if (mouse_event.button == SDL_BUTTON_RIGHT)
             mouse.type = Mouse::Type::RCLICK;
-        }
 
-        if (mouse_event.button == SDL_BUTTON_LEFT) {
-
+        if (mouse_event.button == SDL_BUTTON_LEFT)
             mouse.type = Mouse::Type::LCLICK;
+
+        else {
+            mouse.type = Mouse::Type::NONE;
         }
     }
 }

@@ -1,30 +1,32 @@
 
 #include "game.hpp"
 
+// TODO(Tejas): fix the bug that in pawn promotion default promotion type
+
+// This is okay people...
 using namespace Graphics;
 using namespace Chess;
 
+struct GameState {
+    Board board;
+    bool game_over;
+    bool is_board_flipped;
+    Piece::Type promotion_piece_type;
+};
+
+static GameState G_game_state;
 static Window G_window;
-static Board G_board;
-static bool G_game_over;
-
 static Colors::Theme theme = Colors::REGULAR_TWO;
-
-// NOTE(Tejas): The flipped board is true when the White pieces appear at the 
-//              bottom, and false when the Black pieces are at the bottom
-static bool G_is_board_flipped;
 
 static void selectSquare(Square clicked_square) {
     
-    Piece clicked_piece = G_board.getPieceAt(clicked_square);
+    Piece clicked_piece = G_game_state.board.getPieceAt(clicked_square);
 
-    if (clicked_piece.color == G_board.getTurn()) {
-        G_board.setSelection(clicked_square);
-    }
-    else {
-        G_board.resetSelection();
-        return;
-    }
+    if (clicked_piece.color == G_game_state.board.getTurn())
+        G_game_state.board.setSelection(clicked_square);
+
+    else
+        G_game_state.board.resetSelection();
 }
 
 static void movePiece(Square clicked_square) {
@@ -33,74 +35,91 @@ static void movePiece(Square clicked_square) {
     //              only if the clicked square is a legal square that the selected
     //              piece can move to
 
-    Square selected_square = G_board.getSelectedSquare();
-    Player player_turn = G_board.getTurn();
+    Square selected_square = G_game_state.board.getSelectedSquare();
+    Player player_turn = G_game_state.board.getTurn();
 
-    bool is_valid = MoveEngine::isValidMove(G_board, selected_square, clicked_square);
+    bool is_valid = MoveEngine::isValidMove(G_game_state.board, selected_square, clicked_square);
 
     if (is_valid) {
 
-        G_board.movePiece(selected_square, clicked_square);
+        G_game_state.board.movePiece(selected_square, clicked_square);
 
         // checking for pawn promotion
-        Square promotion_square = MoveEngine::canPromote(G_board, player_turn);
-        if (promotion_square != OFF_SQUARE) {
+        Square promotion_square = MoveEngine::canPromote(G_game_state.board, player_turn);
 
-            // for now promotes to just Queen.
-            Piece promote_to = { Piece::Type::QUEEN, player_turn};
-            G_board.promotePawn(promotion_square, promote_to);
+        if (promotion_square != OFF_SQUARE) {
+            Piece promote_to = { G_game_state.promotion_piece_type, player_turn };
+            G_game_state.board.promotePawn(promotion_square, promote_to);
+            G_game_state.promotion_piece_type = Piece::Type::QUEEN;
         }
 
-        G_board.changeTurn();
+        G_game_state.board.changeTurn();
     }
 
-    Square king_side_castle = MoveEngine::canCastleKingSide(G_board, player_turn);
-    Square queen_side_castle = MoveEngine::canCastleQueenSide(G_board, player_turn);
+    Square king_side_castle = MoveEngine::canCastleKingSide(G_game_state.board, player_turn);
+    Square queen_side_castle = MoveEngine::canCastleQueenSide(G_game_state.board, player_turn);
+
     if (king_side_castle == clicked_square) {
-        G_board.castleKingSide(player_turn);
-        G_board.changeTurn();
+        G_game_state.board.castleKingSide(player_turn);
+        G_game_state.board.changeTurn();
     }
             
     if (queen_side_castle == clicked_square) {
-        G_board.castleQueenSide(player_turn);
-        G_board.changeTurn();
+        G_game_state.board.castleQueenSide(player_turn);
+        G_game_state.board.changeTurn();
     }
 }
 
 static void handleMouse() {
     
     if (G_window.mouse.type == Mouse::Type::RCLICK) {
-        G_board.resetSelection();
-        return;
+        G_game_state.board.resetSelection();
     }
     
     else if (G_window.mouse.type == Mouse::Type::LCLICK) {
 
         Square clicked_square = G_window.rend->pixelToBoardConverter(G_window.mouse.x, G_window.mouse.y);
 
-        if (!G_board.isAnySquareSelected()) {
+        if (!G_game_state.board.isAnySquareSelected()) {
             selectSquare(clicked_square);
-            return;
         }
 
         else {
             movePiece(clicked_square);
-            G_board.updatePlayerInfo();
-            G_board.resetSelection();
+            G_game_state.board.updatePlayerInfo();
+            G_game_state.board.resetSelection();
         }
     }
 }
 
 static void handleKeyboard() {
-    
+
     if (G_window.kbd.type == Keyboard::Type::FLIP_BOARD) {
-        G_is_board_flipped = (G_is_board_flipped) ? false : true;
-        G_window.rend->setFlippedBoard(!G_is_board_flipped);
+        G_game_state.is_board_flipped = (G_game_state.is_board_flipped) ? false : true;
+        G_window.rend->setFlippedBoard(!G_game_state.is_board_flipped);
     }
 
-    else if (G_window.kbd.type == Keyboard::Type::RESET_BOARD) {
-        G_board.resetBoard();
-        G_game_over = false;
+    if (G_window.kbd.type == Keyboard::Type::RESET_BOARD) {
+        G_game_state.board.resetBoard();
+        G_game_state.game_over = false;
+    }
+
+    if (G_window.kbd.type == Keyboard::Type::PROMOTE_TO) {
+
+        switch (G_window.kbd.piece_type) {
+        case Keyboard::PieceType::QUEEN:
+            G_game_state.promotion_piece_type = Piece::Type::QUEEN;
+            break;
+        case Keyboard::PieceType::ROOK:
+            G_game_state.promotion_piece_type = Piece::Type::ROOK;
+            break;
+        case Keyboard::PieceType::BISHOP:
+            G_game_state.promotion_piece_type = Piece::Type::BISHOP;
+            break;
+        case Keyboard::PieceType::KNIGHT:
+            G_game_state.promotion_piece_type = Piece::Type::KNIGHT;
+            break;
+        }
     }
 }
 
@@ -108,13 +127,13 @@ static Player checkGameOver() {
 
     Player winner = Player::NONE;
 
-    if (MoveEngine::isInCheckMate(G_board, Piece::Color::WHITE)) {
-        G_game_over = true;
+    if (MoveEngine::isInCheckMate(G_game_state.board, Piece::Color::WHITE)) {
+        G_game_state.game_over = true;
         winner = Player::BLACK;
     }
 
-    if (MoveEngine::isInCheckMate(G_board, Piece::Color::BLACK)) {
-        G_game_over = true;
+    if (MoveEngine::isInCheckMate(G_game_state.board, Piece::Color::BLACK)) {
+        G_game_state.game_over = true;
         winner = Player::WHITE;
     }
 
@@ -123,7 +142,7 @@ static Player checkGameOver() {
 
 static void drawBoard() {
 
-    Square selected_square = G_board.getSelectedSquare();
+    Square selected_square = G_game_state.board.getSelectedSquare();
 
     for (int rank = 0; rank < BOARD_SIZE; rank++) {
 
@@ -137,10 +156,10 @@ static void drawBoard() {
             if (selected_square == square)
                 G_window.rend->fillSquare(selected_square, theme.highlight_sq);
 
-            G_window.rend->renderPieceTexture(square, G_board.getPieceAt(square));
+            G_window.rend->renderPieceTexture(square, G_game_state.board.getPieceAt(square));
 
             if (selected_square != OFF_SQUARE) {
-                bool is_valid = MoveEngine::isValidMove(G_board, selected_square, square);
+                bool is_valid = MoveEngine::isValidMove(G_game_state.board, selected_square, square);
                 if (is_valid)
                     G_window.rend->fillSquare(square, theme.legal_sq);
             }
@@ -148,13 +167,17 @@ static void drawBoard() {
     }
 
     // highlights castle square(s) if available
-    if (G_board.getPieceAt(selected_square).type == Piece::Type::KING) {
+    if (G_game_state.board.getPieceAt(selected_square).type == Piece::Type::KING) {
 
-        Square king_side_castle_square = MoveEngine::canCastleKingSide(G_board, G_board.getPieceAt(selected_square).color);
+        Square king_side_castle_square =
+            MoveEngine::canCastleKingSide(G_game_state.board,
+                                          G_game_state.board.getPieceAt(selected_square).color);
         if (king_side_castle_square != OFF_SQUARE)
             G_window.rend->fillSquare(king_side_castle_square, theme.legal_sq);
 
-        Square queen_side_castle_square = MoveEngine::canCastleQueenSide(G_board, G_board.getPieceAt(selected_square).color);
+        Square queen_side_castle_square =
+            MoveEngine::canCastleQueenSide(G_game_state.board,
+                                           G_game_state.board.getPieceAt(selected_square).color);
         if (queen_side_castle_square != OFF_SQUARE)
             G_window.rend->fillSquare(queen_side_castle_square, theme.legal_sq);
     }
@@ -167,35 +190,36 @@ int Game::run() {
         return -1;
     }
 
-    G_is_board_flipped = false;
-    G_window.rend->setFlippedBoard(!G_is_board_flipped);
+    G_window.rend->setFlippedBoard(!G_game_state.is_board_flipped);
 
-    G_game_over = false;
+    G_game_state.is_board_flipped = false;
+    G_game_state.promotion_piece_type = Piece::Type::QUEEN;
+    G_game_state.game_over = false;
 
     Player winner = Player::NONE;
 
     while (!G_window.shouldClose()) {
 
-        if (!G_game_over) handleMouse();
+        // update
+        G_window.pollEvents();
+
         handleKeyboard();
 
-        if (!G_game_over) winner = checkGameOver();
+        if (!G_game_state.game_over) {
+            handleMouse();   
+            winner = checkGameOver();
+        }
 
+        // draw
         G_window.rend->clear();
-
         drawBoard();
 
         if (winner != Player::NONE) {
-
-            if (winner == Player::WHITE)
-                G_window.rend->displayFog(Colors::WHITE_FOG);
-
-            if (winner == Player::BLACK)
-                G_window.rend->displayFog(Colors::BLACK_FOG);
+            if (winner == Player::WHITE) G_window.rend->displayFog(Colors::WHITE_FOG);
+            if (winner == Player::BLACK) G_window.rend->displayFog(Colors::BLACK_FOG);
         }
 
         G_window.rend->present();
-        G_window.pollEvents();
     }
 
     return 0;

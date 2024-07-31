@@ -43,3 +43,9 @@ $ .\bin\chess.exe
 
  - x -> Reset Position on the board
  - f -> Flip the board
+
+hold down to promote to a different minor piece
+- 1 -> promote to a Queen
+- 2 -> promote to a Rook
+- 3 -> promote to a Bishop
+- 4 -> promote to a Knight
