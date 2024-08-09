@@ -80,6 +80,14 @@ void Window::pollEvents() {
             kbd.piece_type = Keyboard::PieceType::KNIGHT;
             kbd.type = Keyboard::Type::PROMOTE_TO;
         }
+
+        if (key_pressed == SDLK_LEFT) {
+            kbd.type = Keyboard::Type::PRIVIOUS_MOVE;
+        }
+
+        if (key_pressed == SDLK_RIGHT) {
+            kbd.type = Keyboard::Type::NEXT_MOVE;
+        }
     }
 
     if (event.type == SDL_MOUSEBUTTONDOWN) {
@@ -94,10 +102,6 @@ void Window::pollEvents() {
 
         if (mouse_event.button == SDL_BUTTON_LEFT)
             mouse.type = Mouse::Type::LCLICK;
-
-        else {
-            mouse.type = Mouse::Type::NONE;
-        }
     }
 }
 

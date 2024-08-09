@@ -129,6 +129,78 @@ void Board::fenReader(const std::string &fen_string)  {
     }
 }
 
+const char* Board::getFen() {
+
+    std::string fen = "";
+
+    bool empty_square_found = false;
+    int temp_count = 0;
+
+    for (int rank = 0; rank < BOARD_SIZE; rank++) {
+        
+        for (int file = 0; file < BOARD_SIZE; file++) {
+
+            Square current_square = { rank, file };
+            Piece current_piece = getPieceAt(current_square);
+
+            if (file == 0 && rank != 0) fen += "/";
+
+            if (current_piece == EMPTY_SQUARE) {
+
+                temp_count++;
+                empty_square_found = true;
+
+                if (!(file == BOARD_SIZE - 1)) {
+                    empty_square_found = true;
+                    continue;
+                }
+            }
+
+            if (empty_square_found) {
+                fen += std::to_string(temp_count);
+                empty_square_found = false;
+                temp_count = 0;
+            }
+
+            if (current_piece == WHITE_PAWN)   fen += "P";
+            if (current_piece == WHITE_KNIGHT) fen += "N";
+            if (current_piece == WHITE_BISHOP) fen += "B";
+            if (current_piece == WHITE_ROOK)   fen += "R";
+            if (current_piece == WHITE_QUEEN)  fen += "Q";
+            if (current_piece == WHITE_KING)   fen += "K";
+            if (current_piece == BLACK_PAWN)   fen += "p";
+            if (current_piece == BLACK_KNIGHT) fen += "n";
+            if (current_piece == BLACK_BISHOP) fen += "b";
+            if (current_piece == BLACK_ROOK)   fen += "r";
+            if (current_piece == BLACK_QUEEN)  fen += "q";
+            if (current_piece == BLACK_KING)   fen += "k";
+        }
+    }
+
+    fen += " ";
+
+    if (_turn == Player::WHITE) fen += "w";
+    if (_turn == Player::BLACK) fen += "b";
+
+    fen += " ";
+
+    if (!white.has_king_moved) {
+        if (!white.has_queen_rook_moved)
+            fen += "Q";
+        if (!white.has_king_rook_moved)
+            fen += "K";
+    }
+
+    if (!black.has_king_moved) {
+        if (!black.has_queen_rook_moved)
+            fen += "q";
+        if (!black.has_king_rook_moved)
+            fen += "k";
+    }
+
+    return fen.c_str();
+}
+
 bool Board::isAnySquareSelected() const {
 
     return (_selected_square != OFF_SQUARE );

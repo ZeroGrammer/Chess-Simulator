@@ -34,6 +34,7 @@ set SDL_LIBS=SDL2main.lib SDL2.lib SDL2_image.lib
 
 set SOURCE_FILES=..\source\main.cpp ^
                  ..\source\game.cpp ^
+                 ..\source\move_stack.cpp ^
                  ..\source\Chess\board.cpp ^
                  ..\source\Chess\move_engine.cpp ^
                  ..\source\Graphics\window.cpp ^
