@@ -86,7 +86,7 @@ void Window::pollEvents() {
         }
 
         if (key_pressed == SDLK_RIGHT) {
-            kbd.type = Keyboard::Type::NEXT_MOVE;
+            kbd.type = Keyboard::Type::LATEST_MOVE;
         }
     }
 

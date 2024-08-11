@@ -12,7 +12,7 @@ struct Keyboard {
         RESET_BOARD,   // x key
         PROMOTE_TO,    // any key in { 1, 2, 3, 4 }
         PRIVIOUS_MOVE, // <- arrow key
-        NEXT_MOVE      // -> arrow key
+        LATEST_MOVE    // -> arrow key
     } type;
 
     // NOTE(Tejas): if any key from 1 to 4 is held, the pawn 

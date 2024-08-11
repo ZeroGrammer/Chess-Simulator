@@ -7,9 +7,13 @@ using namespace Chess;
 struct GameState {
 
     bool game_over;
+    bool pause_controls;
+
     bool is_board_flipped;
 
     Board board;
+    Player winner;
+
     Piece::Type promotion_piece_type;
 
     MoveStack move_stack;
@@ -40,7 +44,6 @@ static void movePiece(Square clicked_square) {
     Player player_turn = G_game_state.board.getTurn();
 
     Move move = {};
-    move.fen = _strdup(G_game_state.board.getFen());
     move.player = player_turn;
     move.squares.from = selected_square;
     move.squares.to = clicked_square;
@@ -60,7 +63,9 @@ static void movePiece(Square clicked_square) {
             G_game_state.promotion_piece_type = Piece::Type::QUEEN;
         }
 
+        move.fen = _strdup(G_game_state.board.getFen());
         G_game_state.move_stack.addMove(move);
+
         G_game_state.board.changeTurn();
     }
 
@@ -69,21 +74,25 @@ static void movePiece(Square clicked_square) {
 
     if (king_side_castle == clicked_square) {
 
+        G_game_state.board.castleKingSide(player_turn);
+
         move.is_castle = true;
         move.castle.is_king_side = true;
-        G_game_state.move_stack.addMove(move);
+        move.fen = _strdup(G_game_state.board.getFen());
 
-        G_game_state.board.castleKingSide(player_turn);
+        G_game_state.move_stack.addMove(move);
         G_game_state.board.changeTurn();
     }
             
     if (queen_side_castle == clicked_square) {
 
-        move.is_castle = true;
-        move.castle.is_queen_side = true;
-        G_game_state.move_stack.addMove(move);
-
         G_game_state.board.castleQueenSide(player_turn);
+
+        move.is_castle = true;
+        move.castle.is_king_side = true;
+        move.fen = _strdup(G_game_state.board.getFen());
+
+        G_game_state.move_stack.addMove(move);
         G_game_state.board.changeTurn();
     }
 }
@@ -121,6 +130,8 @@ static void handleKeyboard() {
     if (G_window.kbd.type == Keyboard::Type::RESET_BOARD) {
         G_game_state.board.resetBoard();
         G_game_state.game_over = false;
+        G_game_state.pause_controls = false;
+        G_game_state.move_stack.clear();
     }
 
     if (G_window.kbd.type == Keyboard::Type::PROMOTE_TO) {
@@ -147,23 +158,38 @@ static void handleKeyboard() {
         Move prev_move = G_game_state.move_stack.getPriviousMove();
         G_game_state.board.fenReader(prev_move.fen);
     }
+
+    if (G_window.kbd.type == Keyboard::Type::LATEST_MOVE) {
+
+        Move latest_move = G_game_state.move_stack.getLatestMove();
+        G_game_state.board.fenReader(latest_move.fen);
+    }
 }
 
 static Player checkGameOver() {
 
     Player winner = Player::NONE;
 
-    if (MoveEngine::isInCheckMate(G_game_state.board, Piece::Color::WHITE)) {
-        G_game_state.game_over = true;
+    if (MoveEngine::isInCheckMate(G_game_state.board, Piece::Color::WHITE))
         winner = Player::BLACK;
-    }
 
-    if (MoveEngine::isInCheckMate(G_game_state.board, Piece::Color::BLACK)) {
-        G_game_state.game_over = true;
+    if (MoveEngine::isInCheckMate(G_game_state.board, Piece::Color::BLACK))
         winner = Player::WHITE;
-    }
 
     return winner;
+}
+
+static void updateState() {
+    
+    G_game_state.winner = checkGameOver();
+
+    if (G_game_state.winner != Player::NONE) {
+        G_game_state.game_over = true;
+        G_game_state.pause_controls = true;
+    }
+
+    if (!G_game_state.move_stack.isOnLatest()) G_game_state.pause_controls = true;
+    else G_game_state.pause_controls = false;
 }
 
 static void drawBoard() {
@@ -212,8 +238,6 @@ static void drawBoard() {
 int Game::run() {
 
     const char* STARTING_FEN = "RNBKQBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbkqbnr w QKqk";
-    // const char* STARTING_FEN = "RNBKQBNR/PPPP1PPP/11111111/1111P111/11111111/11111111/pppppppp/rnbkqbnr b QKqk";
-    // const char* STARTING_FEN = "RNBKQBNR/PPP1PPPP/8/3P4/5p2/8/ppppp1pp/rnbkqbnr w QKqk";
 
     if (G_window.initialize() == -1) {
         std::cerr << "An error occured while initializing the Window Class...\n";
@@ -225,11 +249,11 @@ int Game::run() {
     G_game_state.is_board_flipped = false;
     G_game_state.promotion_piece_type = Piece::Type::QUEEN;
     G_game_state.game_over = false;
+    G_game_state.pause_controls = false;
+    G_game_state.winner = Player::NONE;
 
     G_game_state.board.fenReader(STARTING_FEN);
     G_game_state.move_stack.initialize(STARTING_FEN);
-
-    Player winner = Player::NONE;
 
     while (!G_window.shouldClose()) {
 
@@ -237,19 +261,17 @@ int Game::run() {
         G_window.pollEvents();
 
         handleKeyboard();
+        if (!G_game_state.pause_controls) handleMouse();   
 
-        if (!G_game_state.game_over) {
-            handleMouse();   
-            winner = checkGameOver();
-        }
+        updateState();
 
         // draw
         G_window.rend->clear();
         drawBoard();
 
-        if (winner != Player::NONE) {
-            if (winner == Player::WHITE) G_window.rend->displayFog(Colors::WHITE_FOG);
-            if (winner == Player::BLACK) G_window.rend->displayFog(Colors::BLACK_FOG);
+        if (G_game_state.winner != Player::NONE) {
+            if (G_game_state.winner == Player::WHITE) G_window.rend->displayFog(Colors::WHITE_FOG);
+            if (G_game_state.winner == Player::BLACK) G_window.rend->displayFog(Colors::BLACK_FOG);
         }
 
         G_window.rend->present();

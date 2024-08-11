@@ -2,7 +2,7 @@
 #include "move_stack.hpp"
 
 MoveStack::MoveStack()
-    : _moves(nullptr), _move_index(-1)
+    : _moves(nullptr), _top(-1), _move_index(-1)
 {}
 
 MoveStack::~MoveStack() {
@@ -22,25 +22,50 @@ int MoveStack::initialize(const char *starting_fen) {
     return 0;
 }
 
+void MoveStack::clear() {
+    
+    std::memset(_moves, 0, sizeof(Move) * MOVE_STACK_LIMIT);
+    _top = -1;
+    _move_index = -1;
+}
+
 void MoveStack::addMove(Move move) {
 
-    if (!(_move_index < MOVE_STACK_LIMIT)) {
+    if (!(_top < MOVE_STACK_LIMIT)) {
         std::cerr << "Move Stack is full!\n";
         return;
     }
 
-    _moves[++_move_index] = move;
+    _moves[++_top] = move;
+    _move_index = _top;
 }
 
-Move MoveStack::getPriviousMove() {
+bool MoveStack::isOnLatest() {
 
-    // TODO(Tejas): make it so that it remembers the forward moves
+    if (_move_index == _top) return true;
+    else return false;
+}
 
-    if (_move_index < 0) {
+Move MoveStack::getLatestMove() {
+
+    if (_top == -1) {
         Move move = {};
         move.fen = _starting_fen;
         return move;
     }
 
-    return _moves[_move_index--];
+    _move_index = _top;
+    return _moves[_move_index];
+}
+
+Move MoveStack::getPriviousMove() {
+
+
+    if (_move_index <= 0) {
+        Move move = {};
+        move.fen = _starting_fen;
+        return move;
+    }
+
+    return _moves[--_move_index];
 }

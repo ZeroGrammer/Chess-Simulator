@@ -3,32 +3,9 @@
 #define _MOVE_STACK_HPP_
 
 #include "Chess/chess.hpp"
+#include "move.hpp"
 
 #define MOVE_STACK_LIMIT 1024
-
-struct Move {
-
-    Chess::Player player;    // the player who made the move
-    const char* fen;  // The Fen of the board after this move was made
-
-    // NOTE(Tejas): for castling move the 'from' and 'to'
-    //              will be refering to the kigs position
-    struct Squares {
-        Chess::Square from;
-        Chess::Square to;
-    } squares;
-
-    // NOTE(Tejas): this struct is only relevent if the
-    //              is_castling flag is set to true
-    bool is_castle;
-    struct Castling {
-        bool is_queen_side;
-        bool is_king_side;
-    } castle;
-
-    bool is_promotion;
-    bool is_enpassent;
-};
 
 class MoveStack {
 
@@ -39,14 +16,22 @@ public:
 
     int initialize(const char *starting_fen);
 
+    void clear();
+
     void addMove(Move move);
+
+    bool isOnLatest();
+    Move MoveStack::getLatestMove();
+
     Move getPriviousMove();
 
 private:
 
     const char *_starting_fen;
 
-    int _move_index;
+    int _top;         // this is for internal use of the stack
+    int _move_index;  // this is used to index into the history of the game
+
     Move *_moves;
 };
 
