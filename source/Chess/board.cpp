@@ -368,34 +368,17 @@ void Board::enPassent(Square square, Side side) {
     int pn_file = square.file;
 
     // adjusting proper ranks and files
-    if (player == Player::WHITE) {
+    if (player == Player::WHITE) move_rank += 1;
+    if (player == Player::BLACK) move_rank -= 1;
 
-        move_rank += 1;
-
-        if (side == LEFT) {
-            move_file += 1;   
-            pn_file += 1;
-        }
-
-        if (side == RIGHT) {
-            move_file -= 1;   
-            pn_file -= 1;
-        }
+    if (side == KING_SIDE) {
+        move_file -= 1;   
+        pn_file -= 1;
     }
 
-    if (player == Player::BLACK) {
-        
-        move_rank -= 1;
-
-        if (side == LEFT) {
-            move_file -= 1;   
-            pn_file -= 1;
-        }
-
-        if (side == RIGHT) {
-            move_file += 1;   
-            pn_file += 1;
-        }
+    if (side == QUEEN_SIDE) {
+        move_file += 1;   
+        pn_file += 1;
     }
 
     _board[move_rank][move_file] = Piece{ Piece::Type::PAWN, player };

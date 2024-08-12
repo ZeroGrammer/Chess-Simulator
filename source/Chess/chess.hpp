@@ -3,6 +3,7 @@
 
 #include "defines.hpp"
 #include "board.hpp"
+#include "move.hpp"
 #include "move_engine.hpp"
 
 #endif // _CHESS_HPP_

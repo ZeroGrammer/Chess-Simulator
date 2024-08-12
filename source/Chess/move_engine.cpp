@@ -237,11 +237,9 @@ Square MoveEngine::canCastleKingSide(const Board &board, Player player) {
 
     if (is_king_side_castle_allowed) {
 
-        if (player == Player::WHITE)
-            square = { 0, 1 };
+        if (player == Player::WHITE) square = { 0, 1 };
 
-        if (player == Player::BLACK)
-            square = { 7, 1 };
+        if (player == Player::BLACK) square = { 7, 1 };
     }
 
     return square;
@@ -255,15 +253,49 @@ Square MoveEngine::canCastleQueenSide(const Board &board, Player player) {
 
     if (is_queen_side_castle_allowed) {
 
-        if (player == Player::WHITE)
-            square = { 0, 5 };
+        if (player == Player::WHITE) square = { 0, 5 };
 
-        if (player == Player::BLACK)
-            square = { 7, 5 };
+        if (player == Player::BLACK) square = { 7, 5 };
     }
 
     return square;
 }
+
+Square MoveEngine::canEnPassant(const Board &board, Square pawn_square, Move prev_move) {
+
+    Player player = board.getPieceAt(pawn_square).color;
+
+    Square last_move_from = prev_move.squares.from;
+    Square last_move_to = prev_move.squares.to;
+    Piece last_move_piece = prev_move.piece;
+
+    if (last_move_piece.type != Piece::Type::PAWN) return OFF_SQUARE;
+
+    if (player == Player::WHITE) {
+
+        // if (last_move_to.rank - last_move_from.rank < 2) return OFF_SQUARE;
+
+        if (last_move_to.rank == pawn_square.rank &&
+            (last_move_to.file == pawn_square.file + 1 || last_move_to.file == pawn_square.file - 1))
+        {
+            return Square { last_move_to.rank + 1, last_move_to.file };
+        }
+    }
+
+    if (player == Player::BLACK) {
+
+        // if (last_move_from.rank - last_move_to.rank < 2) return OFF_SQUARE;
+
+        if (last_move_to.rank == pawn_square.rank &&
+            (last_move_to.file == pawn_square.file + 1 || last_move_to.file == pawn_square.file - 1))
+        {
+            return Square { last_move_to.rank - 1, last_move_to.file };
+        }
+    }
+
+    return OFF_SQUARE;
+}
+
 
 Square MoveEngine::canPromote(const Board &board, Player player) {
     

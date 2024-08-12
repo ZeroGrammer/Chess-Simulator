@@ -37,9 +37,7 @@
   NOTE(Tejas): Flip Board is a pure Visual effect, the white pawns always need
                to promote at the 7th rank and the black pawns always need
                to promote at the 0th rank.
-
  */
-
 
 namespace Chess {
 
@@ -47,6 +45,12 @@ struct PlayerInfo {
     bool has_king_moved;
     bool has_king_rook_moved;
     bool has_queen_rook_moved;
+};
+
+enum Side {
+    NONE = 0,
+    KING_SIDE,
+    QUEEN_SIDE
 };
 
 class Board {
@@ -72,17 +76,12 @@ public:
 
     void resetBoard();
 
+    // TODO(Tejas): Use Side to castle king insted of have the 2 seperate functions
     void updatePlayerInfo();
     void castleKingSide(Player player);
     void castleQueenSide(Player player);
 
     void promotePawn(Square promotion_square, Piece promote_to);
-
-    enum Side {
-        NONE = 0,
-        LEFT,
-        RIGHT
-    };
 
     void enPassent(Square square, Side side);
 

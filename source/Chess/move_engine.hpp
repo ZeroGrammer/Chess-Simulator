@@ -3,6 +3,7 @@
 #define _MOVE_ENGINE_HPP_
 
 #include "defines.hpp"
+#include "move.hpp"
 #include "board.hpp"
 
 namespace Chess {
@@ -25,6 +26,8 @@ bool isKingSideCastleAllowed(const Board &board, Player player);
 bool isQueenSideCastleAllowed(const Board &board, Player player);
 Square canCastleKingSide(const Board &board, Player player);
 Square canCastleQueenSide(const Board &board, Player player);
+
+Square canEnPassant(const Board &board, Square pawn_square, Move prev_move);
 
 // NOTE(Tejas):checks if any pawns are on the promotion square and returns the
 //             square of the pawn that needs to be promoted

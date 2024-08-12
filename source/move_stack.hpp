@@ -3,9 +3,10 @@
 #define _MOVE_STACK_HPP_
 
 #include "Chess/chess.hpp"
-#include "move.hpp"
 
 #define MOVE_STACK_LIMIT 1024
+
+using namespace Chess;
 
 class MoveStack {
 
@@ -24,6 +25,8 @@ public:
     Move MoveStack::getLatestMove();
 
     Move getPriviousMove();
+
+    void resetMoveIndex();
 
 private:
 

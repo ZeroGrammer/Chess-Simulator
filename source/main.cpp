@@ -3,6 +3,7 @@
   TODO(Tejas):
   - [ ] fix the bug that in pawn promotion default promotion type
   - [ ] Add a Logging system
+  - [ ] Remove SDL dependency
 */
 
 #include "game.hpp"

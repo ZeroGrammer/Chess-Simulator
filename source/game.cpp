@@ -35,10 +35,13 @@ static void selectSquare(Square clicked_square) {
 }
 
 static void movePiece(Square clicked_square) {
-    
+
     // NOTE(Tejas): move the piece from the selected square to the clicked square
     //              only if the clicked square is a legal square that the selected
     //              piece can move to
+
+    // TODO(Tejas): This function should only be called if the moved needs to be made, that is
+    //              this function should not check if the clicked square was valid or not
 
     Square selected_square = G_game_state.board.getSelectedSquare();
     Player player_turn = G_game_state.board.getTurn();
@@ -63,10 +66,13 @@ static void movePiece(Square clicked_square) {
             G_game_state.promotion_piece_type = Piece::Type::QUEEN;
         }
 
+        move.piece = G_game_state.board.getPieceAt(clicked_square);
         move.fen = _strdup(G_game_state.board.getFen());
         G_game_state.move_stack.addMove(move);
 
         G_game_state.board.changeTurn();
+
+        return;
     }
 
     Square king_side_castle = MoveEngine::canCastleKingSide(G_game_state.board, player_turn);
@@ -76,24 +82,53 @@ static void movePiece(Square clicked_square) {
 
         G_game_state.board.castleKingSide(player_turn);
 
+        move.piece = G_game_state.board.getPieceAt(clicked_square);
         move.is_castle = true;
         move.castle.is_king_side = true;
         move.fen = _strdup(G_game_state.board.getFen());
 
         G_game_state.move_stack.addMove(move);
         G_game_state.board.changeTurn();
+
+        return;
     }
             
     if (queen_side_castle == clicked_square) {
 
         G_game_state.board.castleQueenSide(player_turn);
 
+        move.piece = G_game_state.board.getPieceAt(clicked_square);
         move.is_castle = true;
         move.castle.is_king_side = true;
         move.fen = _strdup(G_game_state.board.getFen());
 
         G_game_state.move_stack.addMove(move);
         G_game_state.board.changeTurn();
+
+        return;
+    }
+
+    // That was way eaiser than I thought.
+
+    Move prev_move = G_game_state.move_stack.getLatestMove();
+    Square en_passent = MoveEngine::canEnPassant(G_game_state.board, selected_square, prev_move);
+
+    if (en_passent == clicked_square) {
+
+        if (en_passent.rank < selected_square.rank)
+            G_game_state.board.enPassent(selected_square, Side::KING_SIDE);
+
+        if (en_passent.rank > selected_square.rank)
+            G_game_state.board.enPassent(selected_square, Side::QUEEN_SIDE);
+        
+        move.piece = G_game_state.board.getPieceAt(clicked_square);
+        move.is_enpassent = true;
+        move.fen = _strdup(G_game_state.board.getFen());
+
+        G_game_state.move_stack.addMove(move);
+        G_game_state.board.changeTurn();
+
+        return;
     }
 }
 
@@ -232,6 +267,15 @@ static void drawBoard() {
                                            G_game_state.board.getPieceAt(selected_square).color);
         if (queen_side_castle_square != OFF_SQUARE)
             G_window.rend->fillSquare(queen_side_castle_square, theme.legal_sq);
+    }
+
+    if (G_game_state.board.getPieceAt(selected_square).type == Piece::Type::PAWN) {
+
+        Move prev_move = G_game_state.move_stack.getLatestMove();
+        Square en_passent_square = MoveEngine::canEnPassant(G_game_state.board, selected_square, prev_move);
+
+        if (en_passent_square != OFF_SQUARE)
+            G_window.rend->fillSquare(en_passent_square, theme.legal_sq);
     }
 }
 
