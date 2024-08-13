@@ -6,6 +6,9 @@
   - [ ] Remove SDL dependency
 */
 
+// I thought the adding the new feature would take me about 2 hours
+// It took me 20 mins... So.. Ya..
+
 #include "game.hpp"
 
 int main(int argc, char **argv) {

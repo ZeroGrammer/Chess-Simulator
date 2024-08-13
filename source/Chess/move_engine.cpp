@@ -270,10 +270,9 @@ Square MoveEngine::canEnPassant(const Board &board, Square pawn_square, Move pre
     Piece last_move_piece = prev_move.piece;
 
     if (last_move_piece.type != Piece::Type::PAWN) return OFF_SQUARE;
+    if (std::abs(last_move_to.rank - last_move_from.rank) != 2) return OFF_SQUARE;
 
     if (player == Player::WHITE) {
-
-        // if (last_move_to.rank - last_move_from.rank < 2) return OFF_SQUARE;
 
         if (last_move_to.rank == pawn_square.rank &&
             (last_move_to.file == pawn_square.file + 1 || last_move_to.file == pawn_square.file - 1))
@@ -283,8 +282,6 @@ Square MoveEngine::canEnPassant(const Board &board, Square pawn_square, Move pre
     }
 
     if (player == Player::BLACK) {
-
-        // if (last_move_from.rank - last_move_to.rank < 2) return OFF_SQUARE;
 
         if (last_move_to.rank == pawn_square.rank &&
             (last_move_to.file == pawn_square.file + 1 || last_move_to.file == pawn_square.file - 1))

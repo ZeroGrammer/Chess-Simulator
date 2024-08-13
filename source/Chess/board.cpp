@@ -367,7 +367,6 @@ void Board::enPassent(Square square, Side side) {
     int pn_rank = square.rank;
     int pn_file = square.file;
 
-    // adjusting proper ranks and files
     if (player == Player::WHITE) move_rank += 1;
     if (player == Player::BLACK) move_rank -= 1;
 

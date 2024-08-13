@@ -115,10 +115,10 @@ static void movePiece(Square clicked_square) {
 
     if (en_passent == clicked_square) {
 
-        if (en_passent.rank < selected_square.rank)
+        if (en_passent.file < selected_square.file)
             G_game_state.board.enPassent(selected_square, Side::KING_SIDE);
 
-        if (en_passent.rank > selected_square.rank)
+        if (en_passent.file > selected_square.file)
             G_game_state.board.enPassent(selected_square, Side::QUEEN_SIDE);
         
         move.piece = G_game_state.board.getPieceAt(clicked_square);
