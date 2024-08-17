@@ -27,8 +27,7 @@ int Window::initialize() {
     _window = SDL_CreateWindow(APPLICATION_NAME, SDL_WINDOWPOS_UNDEFINED,
                                SDL_WINDOWPOS_UNDEFINED, _width, _height, 0);
     if (_window == nullptr) {
-        std::cerr << "Failed to create the SDL Window: ";
-        std::cerr << SDL_GetError() << std::endl;
+        log(ERR, "Failed to create the SDL Window: %s", SDL_GetError());
         return -1;
     }
 

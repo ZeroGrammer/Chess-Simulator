@@ -7,12 +7,13 @@
 #include <SDL.h>
 #include <SDL_image.h>
 
-#include <iostream>
+#include <stdint.h>
 #include <string>
 
-#define WND_WIDTH 800
-#define WND_HEIGHT 800
-#define SQUARE_SIZE (WND_HEIGHT / 8)
+// in pixels
+constexpr int SQUARE_SIZE = 100;
+constexpr int WND_WIDTH = SQUARE_SIZE * BOARD_SIZE;
+constexpr int WND_HEIGHT = SQUARE_SIZE * BOARD_SIZE;
 
 namespace Graphics {
 

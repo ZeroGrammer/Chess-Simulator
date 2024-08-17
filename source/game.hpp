@@ -3,6 +3,7 @@
 
 #include "Graphics/graphics.hpp"
 #include "Chess/chess.hpp"
+#include "Engine/engine.hpp"
 
 #include "move_stack.hpp"
 

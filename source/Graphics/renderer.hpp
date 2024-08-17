@@ -3,6 +3,7 @@
 #define _RENDERER_HPP_
 
 #include "defines.hpp"
+#include "log.hpp"
 
 namespace Graphics {
 

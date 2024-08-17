@@ -32,7 +32,7 @@ void MoveStack::clear() {
 void MoveStack::addMove(Move move) {
 
     if (!(_top < MOVE_STACK_LIMIT)) {
-        std::cerr << "Move Stack is full!\n";
+        Graphics::log(Graphics::ERR, "Move Stack is full!");
         return;
     }
 

@@ -3,6 +3,7 @@
 #define _MOVE_STACK_HPP_
 
 #include "Chess/chess.hpp"
+#include "Graphics/graphics.hpp"
 
 #define MOVE_STACK_LIMIT 1024
 

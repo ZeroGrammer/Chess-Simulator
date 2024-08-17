@@ -23,39 +23,36 @@ static GameState G_game_state;
 static Window G_window;
 static Colors::Theme theme = Colors::REGULAR_TWO;
 
-static void selectSquare(Square clicked_square) {
-    
-    Piece clicked_piece = G_game_state.board.getPieceAt(clicked_square);
+static void selectSquare(Square square) {
 
-    if (clicked_piece.color == G_game_state.board.getTurn())
-        G_game_state.board.setSelection(clicked_square);
+    Piece piece = G_game_state.board.getPieceAt(square);
+
+    if (piece.color == G_game_state.board.getTurn())
+        G_game_state.board.setSelection(square);
 
     else
         G_game_state.board.resetSelection();
 }
 
-static void movePiece(Square clicked_square) {
+static void movePiece(Square from, Square to, Player player_turn) {
 
     // NOTE(Tejas): move the piece from the selected square to the clicked square
     //              only if the clicked square is a legal square that the selected
     //              piece can move to
 
-    // TODO(Tejas): This function should only be called if the moved needs to be made, that is
-    //              this function should not check if the clicked square was valid or not
-
-    Square selected_square = G_game_state.board.getSelectedSquare();
-    Player player_turn = G_game_state.board.getTurn();
+    // NOTE(Tejas): because this function and also return without making any move
+    //              the return value is used to check if a move was made or not
 
     Move move = {};
     move.player = player_turn;
-    move.squares.from = selected_square;
-    move.squares.to = clicked_square;
+    move.squares.from = from;
+    move.squares.to = to;
 
-    bool is_valid = MoveEngine::isValidMove(G_game_state.board, selected_square, clicked_square);
+    bool is_valid = MoveEngine::isValidMove(G_game_state.board, from, to);
 
     if (is_valid) {
 
-        G_game_state.board.movePiece(selected_square, clicked_square);
+        G_game_state.board.movePiece(from, to);
 
         // checking for pawn promotion
         Square promotion_square = MoveEngine::canPromote(G_game_state.board, player_turn);
@@ -66,7 +63,7 @@ static void movePiece(Square clicked_square) {
             G_game_state.promotion_piece_type = Piece::Type::QUEEN;
         }
 
-        move.piece = G_game_state.board.getPieceAt(clicked_square);
+        move.piece = G_game_state.board.getPieceAt(to);
         move.fen = _strdup(G_game_state.board.getFen());
         G_game_state.move_stack.addMove(move);
 
@@ -78,11 +75,11 @@ static void movePiece(Square clicked_square) {
     Square king_side_castle = MoveEngine::canCastleKingSide(G_game_state.board, player_turn);
     Square queen_side_castle = MoveEngine::canCastleQueenSide(G_game_state.board, player_turn);
 
-    if (king_side_castle == clicked_square) {
+    if (king_side_castle == to) {
 
         G_game_state.board.castleKingSide(player_turn);
 
-        move.piece = G_game_state.board.getPieceAt(clicked_square);
+        move.piece = G_game_state.board.getPieceAt(to);
         move.is_castle = true;
         move.castle.is_king_side = true;
         move.fen = _strdup(G_game_state.board.getFen());
@@ -93,11 +90,11 @@ static void movePiece(Square clicked_square) {
         return;
     }
             
-    if (queen_side_castle == clicked_square) {
+    if (queen_side_castle == to) {
 
         G_game_state.board.castleQueenSide(player_turn);
 
-        move.piece = G_game_state.board.getPieceAt(clicked_square);
+        move.piece = G_game_state.board.getPieceAt(to);
         move.is_castle = true;
         move.castle.is_king_side = true;
         move.fen = _strdup(G_game_state.board.getFen());
@@ -111,17 +108,17 @@ static void movePiece(Square clicked_square) {
     // That was way eaiser than I thought.
 
     Move prev_move = G_game_state.move_stack.getLatestMove();
-    Square en_passent = MoveEngine::canEnPassant(G_game_state.board, selected_square, prev_move);
+    Square en_passent = MoveEngine::canEnPassant(G_game_state.board, from, prev_move);
 
-    if (en_passent == clicked_square) {
+    if (en_passent == to) {
 
-        if (en_passent.file < selected_square.file)
-            G_game_state.board.enPassent(selected_square, Side::KING_SIDE);
+        if (en_passent.file < from.file)
+            G_game_state.board.enPassent(from, Side::KING_SIDE);
 
-        if (en_passent.file > selected_square.file)
-            G_game_state.board.enPassent(selected_square, Side::QUEEN_SIDE);
+        if (en_passent.file > from.file)
+            G_game_state.board.enPassent(from, Side::QUEEN_SIDE);
         
-        move.piece = G_game_state.board.getPieceAt(clicked_square);
+        move.piece = G_game_state.board.getPieceAt(to);
         move.is_enpassent = true;
         move.fen = _strdup(G_game_state.board.getFen());
 
@@ -148,7 +145,8 @@ static void handleMouse() {
         }
 
         else {
-            movePiece(clicked_square);
+            Square selected_square = G_game_state.board.getSelectedSquare();
+            movePiece(selected_square, clicked_square, G_game_state.board.getTurn());
             G_game_state.board.updatePlayerInfo();
             G_game_state.board.resetSelection();
         }
@@ -225,6 +223,14 @@ static void updateState() {
 
     if (!G_game_state.move_stack.isOnLatest()) G_game_state.pause_controls = true;
     else G_game_state.pause_controls = false;
+
+    if (G_game_state.board.getTurn() == Player::BLACK) {
+
+        Move engine_move = Engine::getBestMove(G_game_state.board, G_game_state.board.getTurn());
+        movePiece(engine_move.squares.from, engine_move.squares.to, G_game_state.board.getTurn());
+        G_game_state.board.updatePlayerInfo();
+        G_game_state.board.resetSelection();
+    }
 }
 
 static void drawBoard() {
@@ -265,6 +271,7 @@ static void drawBoard() {
         Square queen_side_castle_square =
             MoveEngine::canCastleQueenSide(G_game_state.board,
                                            G_game_state.board.getPieceAt(selected_square).color);
+
         if (queen_side_castle_square != OFF_SQUARE)
             G_window.rend->fillSquare(queen_side_castle_square, theme.legal_sq);
     }
@@ -284,17 +291,17 @@ int Game::run() {
     const char* STARTING_FEN = "RNBKQBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbkqbnr w QKqk";
 
     if (G_window.initialize() == -1) {
-        std::cerr << "An error occured while initializing the Window Class...\n";
+        log(ERR, "An Error occured while initializing the Window Class...");
         return -1;
     }
-
-    G_window.rend->setFlippedBoard(!G_game_state.is_board_flipped);
 
     G_game_state.is_board_flipped = false;
     G_game_state.promotion_piece_type = Piece::Type::QUEEN;
     G_game_state.game_over = false;
     G_game_state.pause_controls = false;
     G_game_state.winner = Player::NONE;
+
+    G_window.rend->setFlippedBoard(!G_game_state.is_board_flipped);
 
     G_game_state.board.fenReader(STARTING_FEN);
     G_game_state.move_stack.initialize(STARTING_FEN);
@@ -323,3 +330,4 @@ int Game::run() {
 
     return 0;
 }
+

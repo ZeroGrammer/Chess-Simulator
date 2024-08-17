@@ -19,8 +19,7 @@ Renderer::~Renderer() {
 int Renderer::initialize() {
     
     if (_renderer == nullptr) {
-        std::cerr << "Failed to create the SDL Renderer: ";
-        std::cerr << SDL_GetError() << std::endl;
+        log(ERR, "Failed to create the SDL Renderer: %s", SDL_GetError());
         return -1;
     }
 
@@ -110,7 +109,7 @@ std::string Renderer::getPieceFilePath(Chess::Piece piece) {
         type = "King";
         break;
     default:
-        std::cerr << "Invalid Piece!\n";
+        log(ERR, "Invalid Piece!");
         break;
     }
 
@@ -127,7 +126,7 @@ void Renderer::renderPieceTexture(Chess::Square square, Chess::Piece piece) {
 
     SDL_Surface *piece_image = IMG_Load(piece_file_path.c_str());
     if (piece_image == nullptr) {
-        std::cerr << "Could not open file: " << piece_file_path << "\n";
+        log(ERR, "Could not open file: %s", piece_file_path.c_str());
     }
 
     SDL_Texture* piece_texture = SDL_CreateTextureFromSurface(_renderer, piece_image);

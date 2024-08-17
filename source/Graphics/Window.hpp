@@ -6,6 +6,7 @@
 
 #include "renderer.hpp"
 #include "input.hpp"
+#include "log.hpp"
 
 namespace Graphics {
 

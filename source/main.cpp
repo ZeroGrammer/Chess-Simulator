@@ -1,13 +1,9 @@
 
 /*
   TODO(Tejas):
-  - [ ] fix the bug that in pawn promotion default promotion type
-  - [ ] Add a Logging system
-  - [ ] Remove SDL dependency
+  - [ ] Fix the bug in pawn promotion with the default promotion type
+  - [ ] Add a menu system
 */
-
-// I thought the adding the new feature would take me about 2 hours
-// It took me 20 mins... So.. Ya..
 
 #include "game.hpp"
 
