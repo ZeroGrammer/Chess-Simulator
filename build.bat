@@ -39,8 +39,7 @@ set SOURCE_FILES=..\source\main.cpp ^
                  ..\source\Chess\move_engine.cpp ^
                  ..\source\Graphics\window.cpp ^
                  ..\source\Graphics\log.cpp ^
-                 ..\source\Graphics\renderer.cpp ^
-                 ..\source\Engine\engine.cpp
+                 ..\source\Graphics\renderer.cpp
 
 set OUTPUT_EXE=chess.exe
 

@@ -3,12 +3,11 @@
 
 #include "Graphics/graphics.hpp"
 #include "Chess/chess.hpp"
-#include "Engine/engine.hpp"
 
 #include "move_stack.hpp"
 
 #include <iostream>
-#include <string.h>
+#include <string>
 
 #define RGB(r,g,b)    ((r<<24) | (g<<16) | (b<<8) | 0xFF)
 #define RGBA(r,g,b,a) ((r<<24) | (g<<16) | (b<<8) | a)

@@ -7,7 +7,10 @@ MoveStack::MoveStack()
 
 MoveStack::~MoveStack() {
 
-    if (_moves) delete _moves;
+    if (_moves) {
+        for (int i = 0; i <= _top; i++) free((void*)_moves[i].fen);
+        delete _moves;
+    }
 }
 
 int MoveStack::initialize(const char *starting_fen) {
@@ -50,6 +53,7 @@ Move MoveStack::getLatestMove() {
 
     if (_top == -1) {
         Move move = {};
+
         move.fen = _starting_fen;
         return move;
     }

@@ -9,6 +9,7 @@
 
 #include <stdint.h>
 #include <string>
+#include <cstring>
 
 // in pixels
 constexpr int SQUARE_SIZE = 100;

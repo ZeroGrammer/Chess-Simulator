@@ -27,8 +27,8 @@ int Window::initialize() {
     _window = SDL_CreateWindow(APPLICATION_NAME, SDL_WINDOWPOS_UNDEFINED,
                                SDL_WINDOWPOS_UNDEFINED, _width, _height, 0);
     if (_window == nullptr) {
-        log(ERR, "Failed to create the SDL Window: %s", SDL_GetError());
-        return -1;
+      log(ERR, "Failed to create the SDL Window: %s", SDL_GetError());
+      return -1;
     }
 
     std::memset(&kbd, 0, sizeof(Keyboard));

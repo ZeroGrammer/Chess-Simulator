@@ -223,14 +223,6 @@ static void updateState() {
 
     if (!G_game_state.move_stack.isOnLatest()) G_game_state.pause_controls = true;
     else G_game_state.pause_controls = false;
-
-    if (G_game_state.board.getTurn() == Player::BLACK) {
-
-        Move engine_move = Engine::getBestMove(G_game_state.board, G_game_state.board.getTurn());
-        movePiece(engine_move.squares.from, engine_move.squares.to, G_game_state.board.getTurn());
-        G_game_state.board.updatePlayerInfo();
-        G_game_state.board.resetSelection();
-    }
 }
 
 static void drawBoard() {
@@ -330,4 +322,3 @@ int Game::run() {
 
     return 0;
 }
-

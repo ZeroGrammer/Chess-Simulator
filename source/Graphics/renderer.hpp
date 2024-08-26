@@ -31,14 +31,33 @@ public:
 private:
 
     std::string getPieceFilePath(Chess::Piece piece);
+    SDL_Texture* getPieceTexture(Chess::Piece piece);
+    SDL_Texture* loadTexture(const char *file_path);
 
 private:
 
     SDL_Renderer *_renderer;
 
-    SDL_Rect _screen;
+    SDL_Rect _screen; // the screen dimentions
 
     bool _is_board_flipped;
+
+    struct PieceTextures {
+        SDL_Texture *wPawn;
+        SDL_Texture *wKnight;
+        SDL_Texture *wBishop;
+        SDL_Texture *wRook;
+        SDL_Texture *wQueen;
+        SDL_Texture *wKing;
+        SDL_Texture *bPawn;
+        SDL_Texture *bKnight;
+        SDL_Texture *bBishop;
+        SDL_Texture *bRook;
+        SDL_Texture *bQueen;
+        SDL_Texture *bKing;
+    };
+
+    PieceTextures _piece_textures;
 };
 
 } // namespace Graphics
