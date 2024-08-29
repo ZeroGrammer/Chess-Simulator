@@ -133,17 +133,20 @@ SDL_Texture* Renderer::loadTexture(const char *file_path) {
 
     SDL_Surface *image = IMG_Load(file_path);
 
-    if (image == nullptr)
+    if (image == nullptr) {
         log(ERR, "Could not open file: %s", file_path);
+        return nullptr;
+    }
 
     SDL_Texture* texture = SDL_CreateTextureFromSurface(_renderer, image);
 
-    if (texture == nullptr)
-        log(ERR, "Could not load the texture of: %s", file_path);
-
-    SDL_FreeSurface(image);
+    if (texture == nullptr) {
+        log(ERR, "Could not load the texture from: %s", file_path);
+        return nullptr;
+    }
 
     log(INFO, "Loaded %s", file_path);
+    SDL_FreeSurface(image);
 
     return texture;
 }

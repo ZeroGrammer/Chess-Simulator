@@ -40,9 +40,6 @@ static void movePiece(Square from, Square to, Player player_turn) {
     //              only if the clicked square is a legal square that the selected
     //              piece can move to
 
-    // NOTE(Tejas): because this function and also return without making any move
-    //              the return value is used to check if a move was made or not
-
     Move move = {};
     move.player = player_turn;
     move.squares.from = from;
@@ -132,7 +129,6 @@ static void movePiece(Square from, Square to, Player player_turn) {
 static void handleMouse() {
     
     if (G_window.mouse.type == Mouse::Type::RCLICK) {
-
         G_game_state.board.resetSelection();
     }
     
@@ -216,13 +212,13 @@ static void updateState() {
     
     G_game_state.winner = checkGameOver();
 
+    if (!G_game_state.move_stack.isOnLatest()) G_game_state.pause_controls = true;
+    else G_game_state.pause_controls = false;
+
     if (G_game_state.winner != Player::NONE) {
         G_game_state.game_over = true;
         G_game_state.pause_controls = true;
     }
-
-    if (!G_game_state.move_stack.isOnLatest()) G_game_state.pause_controls = true;
-    else G_game_state.pause_controls = false;
 }
 
 static void drawBoard() {
@@ -278,6 +274,15 @@ static void drawBoard() {
     }
 }
 
+static void drawGameOver() {
+
+    // draw fog on game over
+    if (G_game_state.winner != Player::NONE) {
+        if (G_game_state.winner == Player::WHITE) G_window.rend->displayFog(Colors::WHITE_FOG);
+        if (G_game_state.winner == Player::BLACK) G_window.rend->displayFog(Colors::BLACK_FOG);
+    }
+}
+
 int Game::run() {
 
     const char* STARTING_FEN = "RNBKQBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbkqbnr w QKqk";
@@ -311,11 +316,7 @@ int Game::run() {
         // draw
         G_window.rend->clear();
         drawBoard();
-
-        if (G_game_state.winner != Player::NONE) {
-            if (G_game_state.winner == Player::WHITE) G_window.rend->displayFog(Colors::WHITE_FOG);
-            if (G_game_state.winner == Player::BLACK) G_window.rend->displayFog(Colors::BLACK_FOG);
-        }
+        drawGameOver();
 
         G_window.rend->present();
     }

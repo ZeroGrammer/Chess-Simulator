@@ -82,8 +82,8 @@ void Board::fenReader(const std::string &fen_string)  {
             continue;
         }
 
-        // Empty Squares are indicated by numbers (the number indicates how
-        // many of the following squares are going to be blank)
+        // NOTE(Tejas): Empty Squares are indicated by numbers (the number indicates how
+        //              many of the following squares are going to be blank)
         else if (isdigit(ch)) {
             int empty_squares = static_cast<int>(ch - '0');
             for (int j = 0; j < empty_squares; j++) {
@@ -359,11 +359,11 @@ void Board::enPassent(Square square, Side side) {
     // NOTE(Tejas): Assumes the piece on the given square is a Pawn
     Player player = getPieceAt(square).color;
 
-    // this is the square that the pawn needs to move to
+    // NOTE(Tejas): this is the square that the pawn needs to move to
     int move_rank = square.rank;
     int move_file = square.file;
 
-    // this is the square that the other pawn needs to be captured from
+    // NOTE(Tejas): this is the square that the other pawn needs to be captured from
     int pn_rank = square.rank;
     int pn_file = square.file;
 

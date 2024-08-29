@@ -8,7 +8,7 @@ a simple chess simulator built using the SDL2 graphics library
 ### Dependencies:
 
 [SDL2](https://github.com/libsdl-org/SDL/releases/tag/release-2.28.1) \
-[SDL2_image](https://github.com/libsdl-org/SDL_image/releases/tag/release-2.6.3) \
+[SDL2_image](https://github.com/libsdl-org/SDL_image/releases/tag/release-2.6.3)
 
 (Target operating system: Windows x64)
 

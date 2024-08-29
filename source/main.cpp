@@ -1,8 +1,11 @@
 
 /*
-  TODO(Tejas):
-  - [ ] Fix the bug in pawn promotion with the default promotion type
-  - [ ] Add a menu system
+ * TODO(Tejas):
+ * - [ ] Fix the bug in pawn promotion with the default promotion type
+ * - [ ] Fix so that the FEN string follows the regular convention
+ * - [ ] Add Stalemate detection
+ * - [ ] Add a menu system
+ * - [ ] Remove SDL2 dependency
 */
 
 #include "game.hpp"
