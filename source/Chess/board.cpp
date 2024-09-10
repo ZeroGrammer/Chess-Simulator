@@ -297,54 +297,57 @@ void Board::updatePlayerInfo() {
     }
 }
 
-void Board::castleKingSide(Player player) {
-    
-    int rank = 0;
-
-    if (player == Player::BLACK) rank = 7;
-
-    // NOTE(Tejas): This methods is only being called once it is certain that
-    //              the king can castle King side and the king and rook are on 
-    //              their starting positions.
-    Square king_pos = { rank, 3 };
-    Square rook_pos = { rank, 0 };
-
-    Piece king = getPieceAt(king_pos);
-    Piece rook = getPieceAt(rook_pos);
-
-    _board[king_pos.rank][king_pos.file] = EMPTY_SQUARE;
-    _board[rook_pos.rank][rook_pos.file] = EMPTY_SQUARE;
-
-    king_pos.file -= 2;
-    rook_pos.file += 2;
-
-    _board[king_pos.rank][king_pos.file] = king;
-    _board[rook_pos.rank][rook_pos.file] = rook;
-}
-
-void Board::castleQueenSide(Player player) {
-    
-    int rank = 0;
-
-    if (player == Player::BLACK) rank = 7;
+void Board::castle(Player player, Side side) {
 
     // NOTE(Tejas): This methods is only being called once it is certain that
     //              the king can castle Queen side and the king and rook are on 
     //              their starting positions.
-    Square king_pos = { rank, 3 };
-    Square rook_pos = { rank, 7 };
 
-    Piece king = getPieceAt(king_pos);
-    Piece rook = getPieceAt(rook_pos);
+    if (side == KING_SIDE) {
 
-    _board[king_pos.rank][king_pos.file] = EMPTY_SQUARE;
-    _board[rook_pos.rank][rook_pos.file] = EMPTY_SQUARE;
+        int rank = 0;
 
-    king_pos.file += 2;
-    rook_pos.file -= 3;
+        if (player == Player::BLACK) rank = 7;
 
-    _board[king_pos.rank][king_pos.file] = king;
-    _board[rook_pos.rank][rook_pos.file] = rook;
+        Square king_pos = { rank, 3 };
+        Square rook_pos = { rank, 0 };
+
+        Piece king = getPieceAt(king_pos);
+        Piece rook = getPieceAt(rook_pos);
+
+        _board[king_pos.rank][king_pos.file] = EMPTY_SQUARE;
+        _board[rook_pos.rank][rook_pos.file] = EMPTY_SQUARE;
+
+        king_pos.file -= 2;
+        rook_pos.file += 2;
+
+        _board[king_pos.rank][king_pos.file] = king;
+        _board[rook_pos.rank][rook_pos.file] = rook;
+
+        return;
+    }
+
+    if (side == QUEEN_SIDE) {
+    
+        int rank = 0;
+
+        if (player == Player::BLACK) rank = 7;
+
+        Square king_pos = { rank, 3 };
+        Square rook_pos = { rank, 7 };
+
+        Piece king = getPieceAt(king_pos);
+        Piece rook = getPieceAt(rook_pos);
+
+        _board[king_pos.rank][king_pos.file] = EMPTY_SQUARE;
+        _board[rook_pos.rank][rook_pos.file] = EMPTY_SQUARE;
+
+        king_pos.file += 2;
+        rook_pos.file -= 3;
+
+        _board[king_pos.rank][king_pos.file] = king;
+        _board[rook_pos.rank][rook_pos.file] = rook;
+    }
 }
 
 void Board::promotePawn(Square promotion_square, Piece promote_to) {

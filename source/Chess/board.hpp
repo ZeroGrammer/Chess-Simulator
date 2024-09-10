@@ -76,13 +76,10 @@ public:
 
     void resetBoard();
 
-    // TODO(Tejas): Use Side to castle king insted of have the 2 seperate functions
     void updatePlayerInfo();
-    void castleKingSide(Player player);
-    void castleQueenSide(Player player);
 
+    void castle(Player player, Side side);
     void promotePawn(Square promotion_square, Piece promote_to);
-
     void enPassent(Square square, Side side);
 
 public:

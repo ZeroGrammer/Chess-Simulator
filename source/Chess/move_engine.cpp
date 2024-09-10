@@ -53,13 +53,12 @@ bool MoveEngine::isBishopPathClear(const Board &board, Square from, Square to) {
 
 bool MoveEngine::isRookPathClear(const Board &board, Square from, Square to) {
     
-    // TODO: check if the from to to square is acutally a rooks path
+    // TODO(Tejas): check if the from to to square is acutally a rooks path
 
     // checking horizontally
     if (from.rank == to.rank) {
 
         int d_file = (to.file < from.file) ? -1 : 1;
-
         from.file += d_file;
 
         while (from != to) {
@@ -330,9 +329,7 @@ bool MoveEngine::isLegalSquare(const Board &board, Square move_from, Square move
 
     // NOTE(Tejas): This function checks if the given move (move_from - move_to)
     //              puts the self king in check
-
-    // TODO(Tejas): This does not seem necessary but at the moment cant think of
-    //              anything else so leaving this todo here to comeback to here...
+    
     Board copy_board = board;
 
     Player player = board.getPieceAt(move_from).color;

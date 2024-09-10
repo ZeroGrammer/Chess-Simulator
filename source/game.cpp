@@ -40,6 +40,9 @@ static void movePiece(Square from, Square to, Player player_turn) {
     //              only if the clicked square is a legal square that the selected
     //              piece can move to
 
+
+    // TODO(Tejas): there seem to be a redundency for pushing this move onto the move_stack
+    //              so do something about it, maybe.
     Move move = {};
     move.player = player_turn;
     move.squares.from = from;
@@ -74,7 +77,7 @@ static void movePiece(Square from, Square to, Player player_turn) {
 
     if (king_side_castle == to) {
 
-        G_game_state.board.castleKingSide(player_turn);
+        G_game_state.board.castle(player_turn, KING_SIDE);
 
         move.piece = G_game_state.board.getPieceAt(to);
         move.is_castle = true;
@@ -89,7 +92,7 @@ static void movePiece(Square from, Square to, Player player_turn) {
             
     if (queen_side_castle == to) {
 
-        G_game_state.board.castleQueenSide(player_turn);
+        G_game_state.board.castle(player_turn, QUEEN_SIDE);
 
         move.piece = G_game_state.board.getPieceAt(to);
         move.is_castle = true;
@@ -101,8 +104,6 @@ static void movePiece(Square from, Square to, Player player_turn) {
 
         return;
     }
-
-    // That was way eaiser than I thought.
 
     Move prev_move = G_game_state.move_stack.getLatestMove();
     Square en_passent = MoveEngine::canEnPassant(G_game_state.board, from, prev_move);

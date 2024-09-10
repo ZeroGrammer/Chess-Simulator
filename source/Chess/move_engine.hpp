@@ -55,4 +55,4 @@ bool isValidKingSquare(const Board &board, Square move_from, Square move_to);
 
 } // namespace Chess
 
-#endif _MOVE_ENGINE_HPP_
+#endif // _MOVE_ENGINE_HPP_
