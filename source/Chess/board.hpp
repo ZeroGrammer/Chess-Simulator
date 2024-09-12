@@ -3,7 +3,6 @@
 #define _BOARD_HPP_
 
 #include "defines.hpp"
-#include <string>
 
 /*
   NOTE(Tejas): the board starts (i.e. when rank = 0 and file = 0) at top left

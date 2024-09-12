@@ -198,7 +198,7 @@ const char* Board::getFen() {
             fen += "k";
     }
 
-    return fen.c_str();
+    return _strdup(fen.c_str());
 }
 
 bool Board::isAnySquareSelected() const {

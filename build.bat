@@ -20,7 +20,7 @@ if not exist "bin" (
 
 pushd bin
 
-set FLAGS=/EHsc /MP /Zi /W4
+set FLAGS=/EHsc /MP /Zi /W4 /fsanitize=address
 
 set INCLUDE_PATH=/I"..\middleware\SDL2\SDL2-2.28.1\include"^
                  /I"..\middleware\SDL2\SDL2_image-2.6.3\include"

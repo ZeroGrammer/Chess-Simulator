@@ -27,7 +27,12 @@ int MoveStack::initialize(const char *starting_fen) {
 
 void MoveStack::clear() {
     
+    if (_moves)
+        for (int i = 0; i <= _top; i++)
+            free((void*)_moves[i].fen);
+
     std::memset(_moves, 0, sizeof(Move) * MOVE_STACK_LIMIT);
+
     _top = -1;
     _move_index = -1;
 }

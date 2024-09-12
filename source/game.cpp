@@ -64,7 +64,7 @@ static void movePiece(Square from, Square to, Player player_turn) {
         }
 
         move.piece = G_game_state.board.getPieceAt(to);
-        move.fen = _strdup(G_game_state.board.getFen());
+        move.fen = G_game_state.board.getFen();
         G_game_state.move_stack.addMove(move);
 
         G_game_state.board.changeTurn();
@@ -82,7 +82,7 @@ static void movePiece(Square from, Square to, Player player_turn) {
         move.piece = G_game_state.board.getPieceAt(to);
         move.is_castle = true;
         move.castle.is_king_side = true;
-        move.fen = _strdup(G_game_state.board.getFen());
+        move.fen = G_game_state.board.getFen();
 
         G_game_state.move_stack.addMove(move);
         G_game_state.board.changeTurn();
@@ -97,7 +97,7 @@ static void movePiece(Square from, Square to, Player player_turn) {
         move.piece = G_game_state.board.getPieceAt(to);
         move.is_castle = true;
         move.castle.is_king_side = true;
-        move.fen = _strdup(G_game_state.board.getFen());
+        move.fen = G_game_state.board.getFen();
 
         G_game_state.move_stack.addMove(move);
         G_game_state.board.changeTurn();
@@ -118,7 +118,7 @@ static void movePiece(Square from, Square to, Player player_turn) {
         
         move.piece = G_game_state.board.getPieceAt(to);
         move.is_enpassent = true;
-        move.fen = _strdup(G_game_state.board.getFen());
+        move.fen = G_game_state.board.getFen();
 
         G_game_state.move_stack.addMove(move);
         G_game_state.board.changeTurn();
