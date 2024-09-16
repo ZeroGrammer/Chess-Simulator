@@ -5,6 +5,7 @@
 #include "Chess/chess.hpp"
 
 #include "move_stack.hpp"
+#include "bot.hpp"
 
 #include <iostream>
 #include <string>

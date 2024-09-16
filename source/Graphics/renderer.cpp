@@ -7,7 +7,7 @@ Renderer::Renderer(SDL_Window *window)
     : _renderer(nullptr), _is_board_flipped(false)
 {
     _screen = { 0, 0, WND_WIDTH, WND_HEIGHT };
-    _renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    _renderer = SDL_CreateRenderer(window, -1, 0);
 }
 
 Renderer::~Renderer() {

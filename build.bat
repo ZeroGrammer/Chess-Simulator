@@ -20,7 +20,7 @@ if not exist "bin" (
 
 pushd bin
 
-set FLAGS=/EHsc /MP /Zi /W4 /fsanitize=address
+set FLAGS=/fsanitize=address /EHsc /MP /Zi /W4
 
 set INCLUDE_PATH=/I"..\middleware\SDL2\SDL2-2.28.1\include"^
                  /I"..\middleware\SDL2\SDL2_image-2.6.3\include"
@@ -34,6 +34,7 @@ set SDL_LIBS=SDL2main.lib SDL2.lib SDL2_image.lib
 
 set SOURCE_FILES=..\source\main.cpp ^
                  ..\source\game.cpp ^
+                 ..\source\bot.cpp ^
                  ..\source\move_stack.cpp ^
                  ..\source\Chess\board.cpp ^
                  ..\source\Chess\move_engine.cpp ^

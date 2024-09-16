@@ -36,6 +36,8 @@ static void selectSquare(Square square) {
 
 static void movePiece(Square from, Square to, Player player_turn) {
 
+    // TODO(Tejas): return a value if a move was made.
+
     // NOTE(Tejas): move the piece from the selected square to the clicked square
     //              only if the clicked square is a legal square that the selected
     //              piece can move to
@@ -220,12 +222,28 @@ static void updateState() {
         G_game_state.game_over = true;
         G_game_state.pause_controls = true;
     }
+
+    // TODO(Tejas): Make the handleMouse function return a value if a move was made,
+    //              and if a move was made by the player then only make the engine move.
+    // if (G_game_state.board.getTurn() == Player::BLACK) {
+
+    //     Move move = Bot::getBestMove(G_game_state.board, Player::BLACK);
+    //     G_game_state.board.movePiece(move.squares.from, move.squares.to);
+
+    //     move.fen = _strdup(G_game_state.board.getFen());
+    //     G_game_state.move_stack.addMove(move);
+
+    //     G_game_state.board.changeTurn();
+    //     G_game_state.board.updatePlayerInfo();
+    //     G_game_state.board.resetSelection();
+    // }
 }
 
 static void drawBoard() {
 
     Square selected_square = G_game_state.board.getSelectedSquare();
 
+    // loops through every square and colors each square and renderes the piece on that square
     for (int rank = 0; rank < BOARD_SIZE; rank++) {
 
         for (int file = 0; file < BOARD_SIZE; file++) {
@@ -265,6 +283,7 @@ static void drawBoard() {
             G_window.rend->fillSquare(queen_side_castle_square, theme.legal_sq);
     }
 
+    // highlights enpassent square if available
     if (G_game_state.board.getPieceAt(selected_square).type == Piece::Type::PAWN) {
 
         Move prev_move = G_game_state.move_stack.getLatestMove();
@@ -278,10 +297,8 @@ static void drawBoard() {
 static void drawGameOver() {
 
     // draw fog on game over
-    if (G_game_state.winner != Player::NONE) {
-        if (G_game_state.winner == Player::WHITE) G_window.rend->displayFog(Colors::WHITE_FOG);
-        if (G_game_state.winner == Player::BLACK) G_window.rend->displayFog(Colors::BLACK_FOG);
-    }
+    if (G_game_state.winner == Player::WHITE) G_window.rend->displayFog(Colors::WHITE_FOG);
+    if (G_game_state.winner == Player::BLACK) G_window.rend->displayFog(Colors::BLACK_FOG);
 }
 
 int Game::run() {
@@ -317,7 +334,7 @@ int Game::run() {
         // draw
         G_window.rend->clear();
         drawBoard();
-        drawGameOver();
+        if (G_game_state.winner != Player::NONE) drawGameOver();
 
         G_window.rend->present();
     }
