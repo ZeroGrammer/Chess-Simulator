@@ -16,10 +16,11 @@ public:
 
     int initialize();
 
-    void setFlippedBoard(bool value);
     void present();
 
     void clear();
+
+    void setIsFlipped(bool value);
 
     Chess::Square pixelToBoardConverter(int pixel_x, int pixel_y);
 
@@ -38,9 +39,9 @@ private:
 
     SDL_Renderer *_renderer;
 
-    SDL_Rect _screen; // the screen dimentions
+    bool _is_flipped;
 
-    bool _is_board_flipped;
+    SDL_Rect _screen; // the screen dimentions
 
     struct PieceTextures {
         SDL_Texture *wPawn;

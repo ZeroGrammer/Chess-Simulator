@@ -4,7 +4,7 @@
 using namespace Graphics;
 
 Renderer::Renderer(SDL_Window *window)
-    : _renderer(nullptr), _is_board_flipped(false)
+    : _renderer(nullptr), _is_flipped(false)
 {
     _screen = { 0, 0, WND_WIDTH, WND_HEIGHT };
     _renderer = SDL_CreateRenderer(window, -1, 0);
@@ -56,17 +56,18 @@ int Renderer::initialize() {
     return 0;
 }
 
-void Renderer::setFlippedBoard(bool value) {
+void Renderer::setIsFlipped(bool value) {
 
-    _is_board_flipped = value;
+    _is_flipped = value;
 }
 
 Chess::Square Renderer::pixelToBoardConverter(int pixel_x, int pixel_y) {
 
     Chess::Square square = {};
+
     square.file = pixel_x / SQUARE_SIZE;
     square.rank = pixel_y / SQUARE_SIZE;
-    if (_is_board_flipped) {
+    if (_is_flipped) {
         square.file = (BOARD_SIZE - 1) - square.file;
         square.rank = (BOARD_SIZE - 1) - square.rank;
     }
@@ -88,12 +89,14 @@ void Renderer::clear() {
 void Renderer::fillSquare(Chess::Square square, Color color) {
 
     SDL_Rect rect;
+
     // NOTE(Tejas): This filp board check needs to happen only after all the no
     //              board related manipulations are done.
-    if (_is_board_flipped) {
+    if (_is_flipped) {
         square.file = (BOARD_SIZE - 1) - square.file;
         square.rank = (BOARD_SIZE - 1) - square.rank;
     }
+
     rect.x = square.file * SQUARE_SIZE;
     rect.y = square.rank * SQUARE_SIZE;
     rect.w = SQUARE_SIZE;
@@ -196,11 +199,11 @@ void Renderer::renderPieceTexture(Chess::Square square, Chess::Piece piece) {
 
     // NOTE(Tejas): This filp board check needs to happen only after all the
     //              board related manipulations are done.
-                  
-    if (_is_board_flipped) {
+    if (_is_flipped) {
         square.file = (BOARD_SIZE - 1) - square.file;
         square.rank = (BOARD_SIZE - 1) - square.rank;
     }
+
     rect.x = square.file * SQUARE_SIZE;
     rect.y = square.rank * SQUARE_SIZE;
     rect.w = SQUARE_SIZE;
