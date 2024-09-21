@@ -7,12 +7,20 @@ namespace Graphics {
 struct Keyboard {
 
     enum Type {
+        // On Board Keybinds
         NONE = 0,
         FLIP_BOARD,    // f key
         RESET_BOARD,   // x key
         PROMOTE_TO,    // any key in { 1, 2, 3, 4 }
-        PRIVIOUS_MOVE, // <- arrow key
-        LATEST_MOVE    // -> arrow key
+        PREVIOUS_MOVE, // Left arrow key
+        NEXT_MOVE,     // Right Arrow Key 
+        LATEST_MOVE,   // r key
+
+        TOGGLE_MENU,   // ESC key
+
+        // On Menu Keybinds
+        NEXT_ITEM,     // Arrow Down key
+        PREVIOUS_ITEM, // Arrow Up key
     } type;
 
     // NOTE(Tejas): if any key from 1 to 4 is held, the pawn 

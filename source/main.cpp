@@ -5,7 +5,6 @@
  * - [ ] Fix so that the FEN string follows the regular convention
  * - [ ] Add Stalemate detection
  * - [ ] Add a menu system
- * - [ ] Remove SDL2 dependency
 */
 
 #include "game.hpp"

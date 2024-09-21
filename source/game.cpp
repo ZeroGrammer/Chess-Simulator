@@ -5,7 +5,6 @@ using namespace Graphics;
 using namespace Chess;
 
 
-/*****  Struct Declarations *****/
 struct GameState {
 
     Board board;
@@ -22,73 +21,32 @@ struct Settings {
     bool pause_board_controls;
 
     bool focus_on_board;
+    bool focus_on_menu;
 
     Colors::Theme theme;
 };
-/*****  Struct Declarations *****/
 
 
-
-/***** Global Variable *****/
 static Window    G_window;
 static GameState G_game_state;
 static Settings  G_settings;
 static MoveStack G_move_stack;
-/***** Global Variable *****/
 
 
-
-/***** Function Prototype *****/
-static int  initialize();
-static void update();
-static void handleKeyboardOnBoard();
-static bool makeMove(Square from, Square to, Player player); // called inside of handleMouseOnBoard()
-static bool handleMouseOnBoard();                            // returns true if a move was made
-static void drawGameOverFog();
-static void drawBoard();
-/***** Function Prototype *****/
-
-
-int Game::run() {
-
-    int result = initialize();
-    if (result != 0) return result;
-
-    while (!G_window.shouldClose()) {
-
-        // Updatings
-        G_window.pollEvents();
-
-        update();
-
-        // Drawings
-        G_window.rend->clear();
-
-        if (G_settings.focus_on_board) {
-            drawBoard();   
-            if (G_game_state.game_over) drawGameOverFog();
-        }
-        
-
-        G_window.rend->present();
-    }
-
-    return 0;
-}
-
-
-/***** Function Defination *****/
 static int initialize() {
     
-    const char* STARTING_FEN = "RNBKQBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbkqbnr w QKqk";
-    // const char* STARTING_FEN = "8/pppppppp/8/8/8/8/PPPPPPPP/8 w QKqk";
+    std::string STARTING_FEN = "RNBKQBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbkqbnr w QKqk";
+    // std::string STARTING_FEN = "8/pppppppp/8/8/8/8/PPPPPPPP/8 w QKqk";
 
     if (G_window.initialize() == -1) {
         log(ERR, "An Error occured while initializing the Window Class...");
         return -1;
     }
 
-    G_move_stack.initialize(STARTING_FEN);
+    if (G_move_stack.initialize(STARTING_FEN) == -1) {
+        log(ERR, "An Error occured while initializing the Move Stack...");
+        return -1;
+    }
 
 
     G_game_state.game_over = false;
@@ -100,6 +58,7 @@ static int initialize() {
     G_settings.is_board_flipped = false;
     G_settings.pause_board_controls = false;
     G_settings.focus_on_board = true;
+    G_settings.focus_on_menu = false;
     G_settings.theme = Colors::REGULAR_TWO;
 
 
@@ -108,33 +67,10 @@ static int initialize() {
     return 0;
 }
 
-static void update() {
+static void toggleMenu() {
 
-    if (G_settings.focus_on_board) {
-
-        handleKeyboardOnBoard();
-
-        if (!G_settings.pause_board_controls) {
-            bool result = handleMouseOnBoard();
-            result;
-        }
-
-        if (!G_move_stack.isOnLatest()) G_settings.pause_board_controls = true;
-        else G_settings.pause_board_controls = false;
-
-        if (MoveEngine::isInCheckMate(G_game_state.board, Piece::Color::WHITE)) {
-            G_game_state.winner = Player::BLACK;
-            G_game_state.game_over = true;
-        }
-
-        if (MoveEngine::isInCheckMate(G_game_state.board, Piece::Color::BLACK)) {
-            G_game_state.winner = Player::WHITE;
-            G_game_state.game_over = true;
-        }
-
-    }
-
-    G_window.rend->setIsFlipped(!G_settings.is_board_flipped);
+    G_settings.focus_on_menu = (G_settings.focus_on_menu) ? false : true;
+    G_settings.focus_on_board = !G_settings.focus_on_menu;
 }
 
 static void handleKeyboardOnBoard() {
@@ -169,14 +105,32 @@ static void handleKeyboardOnBoard() {
         }
     }
 
-    if (G_window.kbd.type == Keyboard::Type::PRIVIOUS_MOVE) {
+    if (G_window.kbd.type == Keyboard::Type::PREVIOUS_MOVE) {
         Move prev_move = G_move_stack.getPriviousMove();
         G_game_state.board.fenReader(prev_move.fen);
+    }
+
+    if (G_window.kbd.type == Keyboard::Type::NEXT_MOVE) {
+        Move next_move = G_move_stack.getNextMove();
+        G_game_state.board.fenReader(next_move.fen);
     }
 
     if (G_window.kbd.type == Keyboard::Type::LATEST_MOVE) {
         Move latest_move = G_move_stack.getLatestMove();
         G_game_state.board.fenReader(latest_move.fen);
+    }
+}
+
+static void handleKeyboardOnMenu() {
+
+    if (G_window.kbd.type == Keyboard::Type::NEXT_ITEM) {
+
+        
+    }
+
+    if (G_window.kbd.type == Keyboard::Type::PREVIOUS_ITEM) {
+
+        
     }
 }
 
@@ -190,6 +144,7 @@ static bool makeMove(Square from, Square to, Player player) {
     move.squares.to = to;
 
     bool is_valid = MoveEngine::isValidMove(G_game_state.board, from, to);
+
     Square king_side_castle = MoveEngine::canCastleKingSide(G_game_state.board, player);
     Square queen_side_castle = MoveEngine::canCastleQueenSide(G_game_state.board, player);
 
@@ -296,6 +251,44 @@ static bool handleMouseOnBoard() {
     return 0;
 }
 
+static void update() {
+
+    if (G_window.kbd.type == Keyboard::Type::TOGGLE_MENU)
+        toggleMenu();
+
+    if (G_settings.focus_on_board) {
+
+        handleKeyboardOnBoard();
+
+        if (!G_settings.pause_board_controls) {
+            bool result = handleMouseOnBoard();
+            // TODO(Tejas): // later we'll use this result for the bot to decide wheather it should make a move or wait
+            result;  
+        }
+
+        if (!G_move_stack.isOnLatest()) G_settings.pause_board_controls = true;
+        else G_settings.pause_board_controls = false;
+
+        if (MoveEngine::isInCheckMate(G_game_state.board, Piece::Color::WHITE)) {
+            G_game_state.winner = Player::BLACK;
+            G_game_state.game_over = true;
+        }
+
+        if (MoveEngine::isInCheckMate(G_game_state.board, Piece::Color::BLACK)) {
+            G_game_state.winner = Player::WHITE;
+            G_game_state.game_over = true;
+        }
+
+    }
+
+    if (G_settings.focus_on_menu) {
+
+        handleKeyboardOnMenu();
+    }
+
+    G_window.rend->setIsFlipped(!G_settings.is_board_flipped);
+}
+
 static void drawGameOverFog() {
     
     // draw fog on game over
@@ -357,4 +350,46 @@ static void drawBoard() {
             G_window.rend->fillSquare(en_passent_square, G_settings.theme.legal_sq);
     }
 }
-/***** Function Defination *****/
+
+static void drawMenu() {
+
+    Square s = { 3, 3 };
+    G_window.rend->fillSquare(s, 0xFF0000FF);
+    s = { 3, 4 };
+    G_window.rend->fillSquare(s, 0xFF0000FF);
+    s = { 4, 3 };
+    G_window.rend->fillSquare(s, 0xFF0000FF);
+    s = { 4, 4 };
+    G_window.rend->fillSquare(s, 0xFF0000FF);
+}
+
+int Game::run() {
+
+    int result = initialize();
+    if (result != 0) return result;
+
+    while (!G_window.shouldClose()) {
+
+        // Updatings
+        G_window.pollEvents();
+
+        update();
+
+        // Drawings
+        G_window.rend->clear();
+
+        if (G_settings.focus_on_board) {
+            drawBoard();   
+            if (G_game_state.game_over) drawGameOverFog();
+        }
+
+        if (G_settings.focus_on_menu) {
+            drawMenu();
+        }
+        
+
+        G_window.rend->present();
+    }
+
+    return 0;
+}

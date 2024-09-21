@@ -8,7 +8,8 @@ a simple chess simulator built using the SDL2 graphics library
 ### Dependencies:
 
 [SDL2](https://github.com/libsdl-org/SDL/releases/tag/release-2.28.1) \
-[SDL2_image](https://github.com/libsdl-org/SDL_image/releases/tag/release-2.6.3)
+[SDL2_image](https://github.com/libsdl-org/SDL_image/releases/tag/release-2.6.3) \
+[SDL2_ttf](https://github.com/libsdl-org/SDL_ttf/releases/tag/release-2.22.0)
 
 (Target operating system: Windows x64)
 
@@ -42,8 +43,11 @@ $ .\bin\chess.exe
 ### Keybinds for the application
 
 general settings
- - x -> reset position on the board
- - f -> flip the board
+- x -> reset position on the board
+- f -> flip the board
+- Left-Arrow -> to look into the hisory of the game
+- Right-Arrow -> to go to the latest position 
+- r -> reset the board to show the latest move
 
 hold down any of the following key to promote to a different minor piece
 - 1 -> promote to a Queen
@@ -51,12 +55,8 @@ hold down any of the following key to promote to a different minor piece
 - 3 -> promote to a Bishop
 - 4 -> promote to a Knight
 
-history of the game
-- Left-Arrow -> to look into the hisory of the game
-- Right-Arrow -> to go to the latest position 
-
 Note: When you are looking into the history of the game you cannot move the pieces (since branching is not handled yet).
-      Just press Right-Arrow to go to the latest move and the continue the game.
+      Just press 'r' to go to the latest move and the continue the game.
 
 ### NOTE
 You can compile it for 32-bit, you will just have to change the path for SDL2 libs folders to point at 32-bit binaries in build.bat.

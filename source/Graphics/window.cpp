@@ -15,6 +15,7 @@ Window::~Window() {
     delete rend;
     SDL_DestroyWindow(_window);
 
+    TTF_Quit();
     IMG_Quit();
     SDL_Quit();
 }
@@ -23,6 +24,7 @@ int Window::initialize() {
 
     SDL_Init(SDL_INIT_EVERYTHING);
     IMG_Init(IMG_INIT_PNG);
+    TTF_Init();
 
     _window = SDL_CreateWindow(APPLICATION_NAME, SDL_WINDOWPOS_UNDEFINED,
                                SDL_WINDOWPOS_UNDEFINED, _width, _height, 0);
@@ -80,12 +82,28 @@ void Window::pollEvents() {
             kbd.type = Keyboard::Type::PROMOTE_TO;
         }
 
+        if (key_pressed == SDLK_ESCAPE) {
+            kbd.type = Keyboard::Type::TOGGLE_MENU;
+        }
+
         if (key_pressed == SDLK_LEFT) {
-            kbd.type = Keyboard::Type::PRIVIOUS_MOVE;
+            kbd.type = Keyboard::Type::PREVIOUS_MOVE;
         }
 
         if (key_pressed == SDLK_RIGHT) {
+            kbd.type = Keyboard::Type::NEXT_MOVE;
+        }
+
+        if (key_pressed == SDLK_r) {
             kbd.type = Keyboard::Type::LATEST_MOVE;
+        }
+
+        if (key_pressed == SDLK_UP) {
+            kbd.type = Keyboard::Type::PREVIOUS_ITEM;
+        }
+
+        if (key_pressed == SDLK_DOWN) {
+            kbd.type = Keyboard::Type::NEXT_ITEM;
         }
     }
 

@@ -7,13 +7,10 @@ MoveStack::MoveStack()
 
 MoveStack::~MoveStack() {
 
-    if (_moves) {
-        for (int i = 0; i <= _top; i++) free((void*)_moves[i].fen);
-        delete _moves;
-    }
+    if (_moves) delete []_moves;
 }
 
-int MoveStack::initialize(const char *starting_fen) {
+int MoveStack::initialize(const std::string starting_fen) {
 
     _starting_fen = starting_fen;
 
@@ -26,10 +23,6 @@ int MoveStack::initialize(const char *starting_fen) {
 }
 
 void MoveStack::clear() {
-    
-    if (_moves)
-        for (int i = 0; i <= _top; i++)
-            free((void*)_moves[i].fen);
 
     std::memset(_moves, 0, sizeof(Move) * MOVE_STACK_LIMIT);
 
@@ -76,6 +69,15 @@ Move MoveStack::getPriviousMove() {
     }
 
     return _moves[--_move_index];
+}
+
+Move MoveStack::getNextMove() {
+
+    if (isOnLatest()) {
+        return getLatestMove();
+    }
+
+    return _moves[_move_index++];
 }
 
 void MoveStack::resetMoveIndex() {

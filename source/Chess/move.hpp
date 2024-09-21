@@ -8,8 +8,8 @@ namespace Chess {
     
 struct Move {
 
-    Chess::Player player;    // the player who made the move
-    const char* fen;  // The Fen of the board after this move was made
+    Chess::Player player; // the player who made the move
+    std::string fen;      // The Fen of the board after this move was made
 
     // NOTE(Tejas): for castling the moved piece is the king
     Chess::Piece piece;

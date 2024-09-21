@@ -16,7 +16,7 @@ public:
     MoveStack();
     ~MoveStack();
 
-    int initialize(const char *starting_fen);
+    int initialize(const std::string starting_fen);
 
     void clear();
 
@@ -26,12 +26,13 @@ public:
     Move MoveStack::getLatestMove();
 
     Move getPriviousMove();
+    Move getNextMove();
 
     void resetMoveIndex();
 
 private:
 
-    const char *_starting_fen;
+    std::string _starting_fen;
 
     int _top;         // this is for internal use of the stack
     int _move_index;  // this is used to index into the history of the game

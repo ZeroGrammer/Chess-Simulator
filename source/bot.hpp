@@ -7,7 +7,8 @@
 using namespace Chess;
 
 namespace Bot {
-   
+
+int getEval(Board &board, Player player);
 Move getBestMove(Board &board, Player player);
  
 } // namespace Bot

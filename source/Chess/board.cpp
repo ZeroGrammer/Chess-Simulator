@@ -129,7 +129,7 @@ void Board::fenReader(const std::string &fen_string)  {
     }
 }
 
-const char* Board::getFen() {
+std::string Board::getFen() {
 
     std::string fen = "";
 
@@ -198,7 +198,7 @@ const char* Board::getFen() {
             fen += "k";
     }
 
-    return _strdup(fen.c_str());
+    return fen;
 }
 
 bool Board::isAnySquareSelected() const {

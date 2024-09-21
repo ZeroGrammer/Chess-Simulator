@@ -7,7 +7,6 @@
 #include "move_stack.hpp"
 #include "bot.hpp"
 
-#include <iostream>
 #include <string>
 
 #define RGB(r,g,b)    ((r<<24) | (g<<16) | (b<<8) | 0xFF)

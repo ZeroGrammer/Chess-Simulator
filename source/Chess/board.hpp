@@ -60,7 +60,7 @@ public:
     ~Board();
 
     void fenReader(const std::string &fenstring);
-    const char *getFen();
+    std::string getFen();
 
     bool isAnySquareSelected() const;
     Square getSelectedSquare() const;

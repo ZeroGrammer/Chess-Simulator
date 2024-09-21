@@ -6,10 +6,10 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 
-#include <stdint.h>
 #include <string>
-#include <cstring>
+#include <cstdint>
 
 // in pixels
 constexpr int SQUARE_SIZE = 100;

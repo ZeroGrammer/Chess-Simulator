@@ -1,10 +1,11 @@
 
 #include "bot.hpp"
 
-// static int getEval(Board &board, Player player) {
+int Bot::getEval(Board &board, Player player) {
 
-//     return 0;
-// }
+    (board); (player);
+    return 0;
+}
 
 Move Bot::getBestMove(Board &board, Player player) {
 
