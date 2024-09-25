@@ -17,6 +17,8 @@ struct GameState {
 
 struct MenuState {
 
+    // TODO(Tejas): add PVP and PVE with an option to choose Black or White pieces
+
     enum Options {
         RESUME,
         PVP,
@@ -36,6 +38,9 @@ struct Settings {
 
     bool focus_on_board;
     bool focus_on_menu;
+
+    bool playing_player;
+    bool playing_engine;
 
     Colors::Theme theme;
 };
@@ -75,6 +80,9 @@ static int initialize() {
     G_settings.focus_on_board = true;
     G_settings.focus_on_menu = false;
     G_settings.theme = Colors::REGULAR_TWO;
+
+    G_settings.playing_player = true;
+    G_settings.playing_engine = false;
 
     G_menu_state.selected_option = MenuState::Options::RESUME;
 
@@ -157,19 +165,37 @@ static void handleKeyboardOnMenu() {
 
         switch (G_menu_state.selected_option) {
 
-        case MenuState::Options::RESUME:
+        case MenuState::Options::RESUME: {
             toggleMenu();
-            break;
+        } break;
 
-        case MenuState::Options::PVP:
-            break;
+        case MenuState::Options::PVP: {
+            G_settings.playing_player = true;
+            G_settings.playing_engine = false;
 
-        case MenuState::Options::PVE:
-            break;
+            G_game_state.board.resetBoard();
+            G_game_state.game_over = false;
+            G_settings.pause_board_controls = false;
+            G_move_stack.clear();
 
-        case MenuState::Options::QUIT:
+            toggleMenu();
+        } break;
+
+        case MenuState::Options::PVE: {
+            G_settings.playing_engine = true;
+            G_settings.playing_player = false;
+
+            G_game_state.board.resetBoard();
+            G_game_state.game_over = false;
+            G_settings.pause_board_controls = false;
+            G_move_stack.clear();
+
+            toggleMenu();
+        } break;
+
+        case MenuState::Options::QUIT: {
             G_window.closeWindow();
-            break;
+        } break;
 
         }
     }
@@ -302,9 +328,22 @@ static void update() {
         handleKeyboardOnBoard();
 
         if (!G_settings.pause_board_controls) {
+
             bool result = handleMouseOnBoard();
-            // TODO(Tejas): // later we'll use this result for the bot to decide wheather it should make a move or wait
-            result;  
+
+            if (result && G_settings.playing_engine) {
+
+                Move engine_move = Bot::getBestMove(G_game_state.board, G_game_state.board.getTurn());
+
+                G_game_state.board.movePiece(engine_move.squares.from, engine_move.squares.to);
+
+                G_game_state.board.changeTurn();
+
+                engine_move.piece = G_game_state.board.getPieceAt(engine_move.squares.to);
+                engine_move.fen = G_game_state.board.getFen();
+
+                G_move_stack.addMove(engine_move);
+            }
         }
 
         if (!G_move_stack.isOnLatest()) G_settings.pause_board_controls = true;
