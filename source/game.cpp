@@ -15,6 +15,20 @@ struct GameState {
     Piece::Type promotion_piece_type;
 };
 
+struct MenuState {
+
+    enum Options {
+        RESUME,
+        PVP,
+        PVE,
+        QUIT,
+        OPTION_COUNT
+    };
+
+    Options selected_option;
+    int option_index;
+};
+
 struct Settings {
 
     bool is_board_flipped;
@@ -29,6 +43,7 @@ struct Settings {
 
 static Window    G_window;
 static GameState G_game_state;
+static MenuState G_menu_state;
 static Settings  G_settings;
 static MoveStack G_move_stack;
 
@@ -61,6 +76,8 @@ static int initialize() {
     G_settings.focus_on_menu = false;
     G_settings.theme = Colors::REGULAR_TWO;
 
+    G_menu_state.selected_option = MenuState::Options::RESUME;
+
 
     G_window.rend->setIsFlipped(!G_settings.is_board_flipped);
 
@@ -69,6 +86,7 @@ static int initialize() {
 
 static void toggleMenu() {
 
+    G_menu_state.option_index = 0;
     G_settings.focus_on_menu = (G_settings.focus_on_menu) ? false : true;
     G_settings.focus_on_board = !G_settings.focus_on_menu;
 }
@@ -125,18 +143,41 @@ static void handleKeyboardOnMenu() {
 
     if (G_window.kbd.type == Keyboard::Type::NEXT_ITEM) {
 
-        
+        G_menu_state.option_index++;
+        if (G_menu_state.option_index > MenuState::Options::OPTION_COUNT - 1) G_menu_state.option_index = 0;
     }
 
     if (G_window.kbd.type == Keyboard::Type::PREVIOUS_ITEM) {
 
-        
+        G_menu_state.option_index--;
+        if (G_menu_state.option_index < 0) G_menu_state.option_index = MenuState::Options::OPTION_COUNT - 1;
+    }
+
+    if (G_window.kbd.type == Keyboard::Type::ACTION) {
+
+        switch (G_menu_state.selected_option) {
+
+        case MenuState::Options::RESUME:
+            toggleMenu();
+            break;
+
+        case MenuState::Options::PVP:
+            break;
+
+        case MenuState::Options::PVE:
+            break;
+
+        case MenuState::Options::QUIT:
+            G_window.closeWindow();
+            break;
+
+        }
     }
 }
 
 static bool makeMove(Square from, Square to, Player player) {
 
-    bool result = false;
+    bool move_made = false;
 
     Move move = {};
     move.player = player;
@@ -154,7 +195,7 @@ static bool makeMove(Square from, Square to, Player player) {
     if (is_valid) {
         
         G_game_state.board.movePiece(from, to);
-        result = true;
+        move_made = true;
 
         // checking for pawn promotion
         Square promotion_square = MoveEngine::canPromote(G_game_state.board, player);
@@ -168,7 +209,7 @@ static bool makeMove(Square from, Square to, Player player) {
     else if (king_side_castle == to) {
 
         G_game_state.board.castle(player, Side::KING_SIDE);
-        result = true;
+        move_made = true;
 
         move.is_castle = true;
         move.castle.is_king_side = true;
@@ -177,7 +218,7 @@ static bool makeMove(Square from, Square to, Player player) {
     else if (queen_side_castle == to) {
 
         G_game_state.board.castle(player, Side::QUEEN_SIDE);
-        result = true;
+        move_made = true;
 
         move.is_castle = true;
         move.castle.is_queen_side = true;
@@ -191,14 +232,14 @@ static bool makeMove(Square from, Square to, Player player) {
         if (en_passent.file > from.file)
             G_game_state.board.enPassent(from, Side::QUEEN_SIDE);
         
-        result = true;
+        move_made = true;
 
         move.piece = G_game_state.board.getPieceAt(to);
         move.is_enpassent = true;
     }
 
 
-    if (result) {
+    if (move_made) {
         G_game_state.board.changeTurn();
 
         move.piece = G_game_state.board.getPieceAt(to);
@@ -207,7 +248,7 @@ static bool makeMove(Square from, Square to, Player player) {
         G_move_stack.addMove(move);
     }
 
-    return result; 
+    return move_made; 
 }
 
 static bool handleMouseOnBoard() {
@@ -269,6 +310,8 @@ static void update() {
         if (!G_move_stack.isOnLatest()) G_settings.pause_board_controls = true;
         else G_settings.pause_board_controls = false;
 
+        G_game_state.game_over = false;
+
         if (MoveEngine::isInCheckMate(G_game_state.board, Piece::Color::WHITE)) {
             G_game_state.winner = Player::BLACK;
             G_game_state.game_over = true;
@@ -281,9 +324,11 @@ static void update() {
 
     }
 
+
     if (G_settings.focus_on_menu) {
 
         handleKeyboardOnMenu();
+        G_menu_state.selected_option = (MenuState::Options)G_menu_state.option_index;
     }
 
     G_window.rend->setIsFlipped(!G_settings.is_board_flipped);
@@ -353,14 +398,69 @@ static void drawBoard() {
 
 static void drawMenu() {
 
-    Square s = { 3, 3 };
-    G_window.rend->fillSquare(s, 0xFF0000FF);
-    s = { 3, 4 };
-    G_window.rend->fillSquare(s, 0xFF0000FF);
-    s = { 4, 3 };
-    G_window.rend->fillSquare(s, 0xFF0000FF);
-    s = { 4, 4 };
-    G_window.rend->fillSquare(s, 0xFF0000FF);
+    // NOTE(Tejas): Since the window is not resizable, harcoding the text coordinates for now
+
+    int width  = G_window.getWidth();
+
+    int y_offset = 100;
+
+    Rect button_rect = { };
+    int color;
+
+    // The Title
+    int title_text_width  = 325;
+    int title_text_height = 65;
+    button_rect = { (width / 2) - (title_text_width / 2), y_offset, title_text_width, title_text_height };
+    const char* title_text = "Chess-Simulator";
+    G_window.rend->drawText(BOLD, title_text, button_rect, 0xFFFFFFFF);
+
+
+    y_offset += 150;
+
+
+    // Resume Game (index 1)
+    int resume_text_width  = 155;
+    int resume_text_height = 50;
+    button_rect = { (width / 2) - (resume_text_width / 2), y_offset, resume_text_width, resume_text_height };
+    color = (G_menu_state.selected_option == MenuState::Options::RESUME) ? 0x00FF00FF : 0xFFFFFFFF;
+    const char* resume_text = "Resume";
+    G_window.rend->drawText(REGULAR, resume_text, button_rect, color);
+
+
+    y_offset += 65;
+
+
+    // Play Player vs Player (index 2)
+    int pvp_text_width = 355;
+    int pvp_text_height = 50;
+    button_rect = { (width / 2) - (pvp_text_width / 2), y_offset, pvp_text_width, pvp_text_height };
+    color = (G_menu_state.selected_option == MenuState::Options::PVP) ? 0x00FF00FF : 0xFFFFFFFF;
+    const char* pvp_text = "Player vs Player";
+    G_window.rend->drawText(REGULAR, pvp_text, button_rect, color);
+
+
+    y_offset += 65;
+
+
+    // Play Player vs Engine (index 3) 
+    int pve_text_width = 355;
+    int pve_text_height = 50;
+    button_rect = { (width / 2) - (pve_text_width / 2), y_offset, pve_text_width, pve_text_height };
+    color = (G_menu_state.selected_option == MenuState::Options::PVE) ? 0x00FF00FF : 0xFFFFFFFF;
+    const char* pve_text = "Player vs Engine";
+    G_window.rend->drawText(REGULAR, pve_text, button_rect, color);
+
+
+    y_offset += 65;
+
+
+    // Quit (index 3)
+    int quit_text_width  = 95;
+    int quit_text_height = 45;
+    button_rect = { (width / 2) - (quit_text_width / 2), y_offset, quit_text_width, quit_text_height };
+    color = (G_menu_state.selected_option == MenuState::Options::QUIT) ? 0x00FF00FF : 0xFFFFFFFF;
+    const char* quit_text = "Quit";
+    G_window.rend->drawText(REGULAR, quit_text, button_rect, color);
 }
 
 int Game::run() {
@@ -376,14 +476,14 @@ int Game::run() {
         update();
 
         // Drawings
-        G_window.rend->clear();
-
         if (G_settings.focus_on_board) {
+            G_window.rend->clear(0x000000FF);
             drawBoard();   
             if (G_game_state.game_over) drawGameOverFog();
         }
 
         if (G_settings.focus_on_menu) {
+            G_window.rend->clear(0x005555FF);
             drawMenu();
         }
         

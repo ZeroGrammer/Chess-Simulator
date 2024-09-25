@@ -21,6 +21,8 @@ struct Keyboard {
         // On Menu Keybinds
         NEXT_ITEM,     // Arrow Down key
         PREVIOUS_ITEM, // Arrow Up key
+
+        ACTION         // Return (Enter) Key
     } type;
 
     // NOTE(Tejas): if any key from 1 to 4 is held, the pawn 

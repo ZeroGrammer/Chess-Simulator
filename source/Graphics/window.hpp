@@ -24,6 +24,11 @@ public:
 
     bool shouldClose() const;
 
+    void closeWindow();
+
+    int getWidth() const;
+    int getHeight() const;
+
 public:
 
     Keyboard kbd;

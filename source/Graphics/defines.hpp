@@ -19,6 +19,7 @@ constexpr int WND_HEIGHT = SQUARE_SIZE * BOARD_SIZE;
 namespace Graphics {
 
 typedef uint32_t Color;
+typedef SDL_Rect Rect;
 
 } // namespace Graphics
 

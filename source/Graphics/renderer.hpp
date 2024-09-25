@@ -5,6 +5,11 @@
 #include "defines.hpp"
 #include "log.hpp"
 
+#define FontType uint8_t
+#define REGULAR  0x00
+#define BOLD     0x01
+#define SMALL    0x02
+
 namespace Graphics {
 
 class Renderer  {
@@ -18,7 +23,7 @@ public:
 
     void present();
 
-    void clear();
+    void clear(Color color);
 
     void setIsFlipped(bool value);
 
@@ -26,6 +31,8 @@ public:
 
     void fillSquare(Chess::Square square, Color color);
     void renderPieceTexture(Chess::Square square, Chess::Piece piece);
+
+    void drawText(FontType font_type, const char *text, Rect position, Color text_color);
 
     void displayFog(Color color);
 
@@ -57,8 +64,14 @@ private:
         SDL_Texture *bQueen;
         SDL_Texture *bKing;
     };
-
     PieceTextures _piece_textures;
+
+    struct MenuFont {
+        TTF_Font *bold;
+        TTF_Font *regular;
+        TTF_Font *small;
+    };
+    MenuFont _menu_font;
 };
 
 } // namespace Graphics

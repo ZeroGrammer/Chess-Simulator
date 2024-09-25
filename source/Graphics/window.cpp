@@ -56,11 +56,8 @@ void Window::pollEvents() {
 
         SDL_Keycode key_pressed = event.key.keysym.sym;
 
-        if (key_pressed == SDLK_f)
-            kbd.type = Keyboard::Type::FLIP_BOARD;
-
-        if (key_pressed == SDLK_x)
-            kbd.type = Keyboard::Type::RESET_BOARD;
+        if (key_pressed == SDLK_f) kbd.type = Keyboard::Type::FLIP_BOARD;
+        if (key_pressed == SDLK_x) kbd.type = Keyboard::Type::RESET_BOARD;
 
         if (key_pressed == SDLK_1) {
             kbd.piece_type = Keyboard::PieceType::QUEEN;
@@ -82,29 +79,14 @@ void Window::pollEvents() {
             kbd.type = Keyboard::Type::PROMOTE_TO;
         }
 
-        if (key_pressed == SDLK_ESCAPE) {
-            kbd.type = Keyboard::Type::TOGGLE_MENU;
-        }
-
-        if (key_pressed == SDLK_LEFT) {
-            kbd.type = Keyboard::Type::PREVIOUS_MOVE;
-        }
-
-        if (key_pressed == SDLK_RIGHT) {
-            kbd.type = Keyboard::Type::NEXT_MOVE;
-        }
-
-        if (key_pressed == SDLK_r) {
-            kbd.type = Keyboard::Type::LATEST_MOVE;
-        }
-
-        if (key_pressed == SDLK_UP) {
-            kbd.type = Keyboard::Type::PREVIOUS_ITEM;
-        }
-
-        if (key_pressed == SDLK_DOWN) {
-            kbd.type = Keyboard::Type::NEXT_ITEM;
-        }
+        if (key_pressed == SDLK_ESCAPE) kbd.type = Keyboard::Type::TOGGLE_MENU;
+        if (key_pressed == SDLK_LEFT)   kbd.type = Keyboard::Type::PREVIOUS_MOVE;
+        if (key_pressed == SDLK_RIGHT)  kbd.type = Keyboard::Type::NEXT_MOVE;
+        if (key_pressed == SDLK_r)      kbd.type = Keyboard::Type::LATEST_MOVE;
+        if (key_pressed == SDLK_UP)     kbd.type = Keyboard::Type::PREVIOUS_ITEM;
+        if (key_pressed == SDLK_DOWN)   kbd.type = Keyboard::Type::NEXT_ITEM;
+    
+        if (key_pressed == SDLK_RETURN || key_pressed == SDLK_KP_ENTER)  kbd.type = Keyboard::Type::ACTION;
     }
 
     if (event.type == SDL_MOUSEBUTTONDOWN) {
@@ -125,4 +107,19 @@ void Window::pollEvents() {
 bool Window::shouldClose() const {
 
     return !_running;
+}
+
+void Window::closeWindow() {
+
+    _running = false;
+}
+
+int Window::getWidth() const {
+
+    return _width;
+}
+
+int Window::getHeight() const {
+
+    return _height;
 }

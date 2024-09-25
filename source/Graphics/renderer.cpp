@@ -26,6 +26,10 @@ Renderer::~Renderer() {
     SDL_DestroyTexture(_piece_textures.bQueen);
     SDL_DestroyTexture(_piece_textures.bKing);
 
+    TTF_CloseFont(_menu_font.bold);
+    TTF_CloseFont(_menu_font.regular);
+    TTF_CloseFont(_menu_font.small);
+
     SDL_DestroyRenderer(_renderer);
 }
 
@@ -52,6 +56,21 @@ int Renderer::initialize() {
     _piece_textures.bRook   = loadTexture(getPieceFilePath(Chess::BLACK_ROOK).c_str());
     _piece_textures.bQueen  = loadTexture(getPieceFilePath(Chess::BLACK_QUEEN).c_str());
     _piece_textures.bKing   = loadTexture(getPieceFilePath(Chess::BLACK_KING).c_str());
+
+
+    _menu_font.bold    = TTF_OpenFont("./assets/fonts/Hermit-Bold.otf", 34);
+    _menu_font.regular = TTF_OpenFont("./assets/fonts/Hermit-Regular.otf", 30);
+    _menu_font.small   = TTF_OpenFont("./assets/fonts/Hermit-Regular.otf", 22);
+
+    // _menu_font.bold    = TTF_OpenFont("./assets/fonts/CONSOLAB.ttf", 30);
+    // _menu_font.regular = TTF_OpenFont("./assets/fonts/CONSOLA.ttf", 30);
+    // _menu_font.small   = TTF_OpenFont("./assets/fonts/CONSOLA.ttf", 24);
+
+    if (_menu_font.bold == nullptr || _menu_font.regular == nullptr) {
+        log(ERR, "Failed while loading on or more fonts");
+        return -1;
+    }
+
 
     return 0;
 }
@@ -80,10 +99,18 @@ void Renderer::present() {
     SDL_RenderPresent(_renderer);
 }
 
-void Renderer::clear() {
+void Renderer::clear(Color color) {
     
-    SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
+    uint8_t r = (color >> 24) & 0xFF;
+    uint8_t g = (color >> 16) & 0xFF;
+    uint8_t b = (color >> 8) & 0xFF;
+    uint8_t a = color & 0xFF;
+
+    SDL_SetRenderDrawColor(_renderer, r, g, b, a);
     SDL_RenderFillRect(_renderer, &_screen);
+
+    // SDL_SetRenderDrawColor(_renderer, 255, 255, 255, 255);
+    // SDL_RenderDrawLine(_renderer, _screen.w / 2, 0, _screen.w / 2, _screen.h);
 }
 
 void Renderer::fillSquare(Chess::Square square, Color color) {
@@ -148,9 +175,7 @@ SDL_Texture* Renderer::loadTexture(const char *file_path) {
         return nullptr;
     }
 
-    log(INFO, "Loaded %s", file_path);
     SDL_FreeSurface(image);
-
     return texture;
 }
 
@@ -210,6 +235,40 @@ void Renderer::renderPieceTexture(Chess::Square square, Chess::Piece piece) {
     rect.h = SQUARE_SIZE;
 
     SDL_RenderCopy(_renderer, piece_texture, NULL, &rect);
+}
+
+void Renderer::drawText(FontType font_type, const char *text, Rect position, Color text_color) {
+
+    // SDL_SetRenderDrawColor(_renderer, 18, 18, 18, 255);
+    // SDL_RenderFillRect(_renderer, &position);
+
+    uint8_t r = (text_color >> 24) & 0xFF;
+    uint8_t g = (text_color >> 16) & 0xFF;
+    uint8_t b = (text_color >> 8) & 0xFF;
+    uint8_t a = text_color & 0xFF;
+
+    SDL_Color c = { r, g, b, a };
+
+    TTF_Font *font = _menu_font.regular;
+    if (font_type == BOLD) font = _menu_font.bold;
+    if (font_type == SMALL) font = _menu_font.small;
+
+    SDL_Surface *surface = TTF_RenderText_Solid(font, text, c);
+    if (surface == nullptr) {
+        log(ERR, "Could not create surface while loading the Bold font for text \"%s\"", text);
+        return;
+    }
+
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(_renderer, surface);
+    if (texture == nullptr) {
+        log(ERR, "Could not create the texture from surface for text \"%s\"", text);
+        return;
+    }
+
+    SDL_FreeSurface(surface);
+
+    SDL_RenderCopy(_renderer, texture, NULL, &position);
+    SDL_DestroyTexture(texture);
 }
 
 void Renderer::displayFog(Color color) {
