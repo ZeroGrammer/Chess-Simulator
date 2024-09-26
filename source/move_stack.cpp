@@ -63,6 +63,7 @@ Move MoveStack::getLatestMove() {
 Move MoveStack::getPriviousMove() {
 
     if (_move_index <= 0) {
+        _move_index = -1;
         Move move = {};
         move.fen = _starting_fen;
         return move;
@@ -73,11 +74,9 @@ Move MoveStack::getPriviousMove() {
 
 Move MoveStack::getNextMove() {
 
-    if (isOnLatest()) {
-        return getLatestMove();
-    }
+    if (isOnLatest()) return getLatestMove();
 
-    return _moves[_move_index++];
+    return _moves[++_move_index];
 }
 
 void MoveStack::resetMoveIndex() {
