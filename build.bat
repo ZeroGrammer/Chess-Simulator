@@ -38,7 +38,6 @@ set SDL_LIBS=SDL2main.lib SDL2.lib SDL2_image.lib SDL2_ttf.lib
 set SOURCE_FILES=..\source\main.cpp ^
                  ..\source\game.cpp ^
                  ..\source\move_stack.cpp ^
-                 ..\source\bot.cpp ^
                  ..\source\Chess\board.cpp ^
                  ..\source\Chess\move_engine.cpp ^
                  ..\source\Graphics\window.cpp ^
@@ -52,7 +51,7 @@ call cl %FLAGS% ^
         %SOURCE_FILES% ^
         %SYSTEM_LIBS% ^
         /link %LIB_PATH% %SDL_LIBS% ^
-        /SUBSYSTEM:CONSOLE /OUT:%output_exe% 
+        /SUBSYSTEM:CONSOLE /OUT:%OUTPUT_EXE% 
 
 popd
 endlocal

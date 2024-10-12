@@ -21,6 +21,8 @@ bool isRookPathClear(const Board &board, Square from, Square to);
 
 bool isUnderAttack(const Board &board, Player player, Square square);
 bool isInCheckMate(const Board &board, Player player);
+bool isStalemate(const Board &board, Player player);
+bool isDraw(const Board &board, Player player);
 
 bool isKingSideCastleAllowed(const Board &board, Player player);
 bool isQueenSideCastleAllowed(const Board &board, Player player);
@@ -50,6 +52,8 @@ bool isValidBishopSquare(const Board& board, Square move_from, Square move_to);
 bool isValidRookSquare(const Board &board, Square move_from, Square move_to);
 bool isValidQueenSquare(const Board &board, Square move_from, Square move_to);
 bool isValidKingSquare(const Board &board, Square move_from, Square move_to);
+
+std::vector<Move> getAllLegalMoves(const Board &board, Player player, Move latest_move);
 
 } // namespace MoveEngine
 

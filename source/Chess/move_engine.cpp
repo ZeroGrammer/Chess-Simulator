@@ -144,6 +144,79 @@ bool MoveEngine::isInCheckMate(const Board &board, Player player) {
     return true;
 }
 
+bool MoveEngine::isStalemate(const Board &board, Player player) {
+
+    Square king_pos = getKingPos(board, player);
+    if (isUnderAttack(board, player, king_pos)) return false;
+
+    for (int rank = 0; rank < BOARD_SIZE; rank++) {
+
+        for (int file = 0; file < BOARD_SIZE; file++) {
+
+            Piece current_piece = board.getPieceAt(Square{ rank, file });
+            Square current_square = { rank, file };
+
+            if (current_piece == EMPTY_SQUARE) continue;
+
+            if (current_piece.color != player) continue;
+
+            for (int rank2 = 0; rank2 < BOARD_SIZE; rank2++) {
+    
+                for (int file2 = 0; file2 < BOARD_SIZE; file2++) {
+
+                    if (MoveEngine::isValidSquare(board, current_square, { rank2, file2 }) &&
+                        MoveEngine::isLegalSquare(board, current_square, { rank2, file2 }))
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
+bool MoveEngine::isDraw(const Board &board, Player player) {
+
+    if (isStalemate(board, player)) return true;
+
+    bool one_bishop = false;
+    bool one_knight = false;
+    bool two_knights = false;
+
+    for (int rank = 0; rank < BOARD_SIZE; rank++) {
+
+        for (int file = 0; file < BOARD_SIZE; file++) {
+
+            Square current_square = { rank, file };
+            Piece current_piece = board.getPieceAt(current_square);
+
+            if (current_piece.color != player) continue;
+
+            if (current_piece.type == Piece::Type::ROOK  ||
+                current_piece.type == Piece::Type::QUEEN ||
+                current_piece.type == Piece::Type::PAWN)
+            {
+                return false;
+            }
+
+            if (current_piece.type == Piece::Type::BISHOP) {
+                if (one_bishop) return false; // 2 bishops is not a draw
+                one_bishop = true;
+            }
+
+            if (current_piece.type == Piece::Type::KNIGHT) {
+                if (two_knights) return false;      // 3 knights is not a draw
+                if (one_knight) two_knights = true; // we will treat 2 knights as a draw
+                one_knight = true;
+            }
+        }
+    }
+
+    return true;
+}
+
 bool MoveEngine::isKingSideCastleAllowed(const Board &board, Player player) {
     
     int rank = 0;
@@ -513,4 +586,68 @@ bool MoveEngine::isValidKingSquare(const Board &board, Square move_from, Square 
     }
 
     return false;
+}
+
+std::vector<Move> MoveEngine::getAllLegalMoves(const Board &board, Player player, Move latest_move) {
+
+    std::vector<Move> legal_moves;
+
+    for (int from_rank = 0; from_rank < BOARD_SIZE; from_rank++) {
+
+        for (int from_file = 0; from_file < BOARD_SIZE; from_file++) {
+
+            Square from = { from_rank, from_file };
+            Piece from_piece = board.getPieceAt(from);
+
+            if (from_piece.color == player) {
+
+                for (int to_rank = 0; to_rank < BOARD_SIZE; to_rank++) {
+
+                    for (int to_file = 0; to_file < BOARD_SIZE; to_file++) {
+
+                        Square to = { to_rank, to_file };
+                        Piece to_piece = board.getPieceAt(to);
+
+                        if (to_piece.color != player) {
+
+                            Move move = {};
+                            move.player = player;
+                            move.squares.from = from;
+                            move.squares.to = to;
+
+                            // Checking for basic piece movement
+                            bool is_valid = MoveEngine::isValidMove(board, from, to);
+                            if (is_valid) {
+                                legal_moves.push_back(move);
+                            }
+
+                            Square king_side_castle =  canCastleKingSide(board, player);
+                            if (king_side_castle == to) {
+                                move.is_castle = true;
+                                move.castle.is_king_side = true;
+
+                                legal_moves.push_back(move);
+                            }
+                            
+                            Square queen_side_castle = canCastleQueenSide(board, player);
+                            if (queen_side_castle == to) {
+                                move.is_castle = true;
+                                move.castle.is_queen_side = true;
+
+                                legal_moves.push_back(move);
+                            }
+
+                            Square en_passent = canEnPassant(board, from, latest_move);
+                            if (en_passent == to) {
+                                move.is_enpassent = true;
+                                legal_moves.push_back(move);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return legal_moves;
 }

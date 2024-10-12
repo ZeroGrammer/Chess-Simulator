@@ -23,4 +23,7 @@ typedef SDL_Rect Rect;
 
 } // namespace Graphics
 
+#define RGB(r,g,b)    ((r<<24) | (g<<16) | (b<<8) | 0xFF)
+#define RGBA(r,g,b,a) ((r<<24) | (g<<16) | (b<<8) | a)
+
 #endif // _GRAPHICS_DEFINES_HPP_

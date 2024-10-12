@@ -56,7 +56,10 @@ static MoveStack G_move_stack;
 static int initialize() {
     
     std::string STARTING_FEN = "RNBKQBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbkqbnr w QKqk";
-    // std::string STARTING_FEN = "8/pppppppp/8/8/8/8/PPPPPPPP/8 w QKqk";
+    // std::string STARTING_FEN = "8/4KQ2/8/8/8/8/k7/8 b";
+    // std::string STARTING_FEN = "R2bK2R/PPP2PPP/3P4/2BnP3/2pNN1B1/3p4/pp2nppp/r2qkb1r w KQkq";
+    // std::string STARTING_FEN = "9/8/8/2k1P3/4p1K1/8/8/8 b";
+    // std::string STARTING_FEN = "8/4BKB1/8/8/8/8/8/4bkb1 b";
 
     if (G_window.initialize() == -1) {
         log(ERR, "An Error occured while initializing the Window Class...");
@@ -81,8 +84,8 @@ static int initialize() {
     G_settings.focus_on_menu = false;
     G_settings.theme = Colors::REGULAR_TWO;
 
-    G_settings.playing_player = true;
-    G_settings.playing_engine = false;
+    G_settings.playing_player = false;
+    G_settings.playing_engine = true;
 
     G_menu_state.selected_option = MenuState::Options::RESUME;
 
@@ -113,6 +116,7 @@ static void handleKeyboardOnBoard() {
     }
 
     if (G_window.kbd.type == Keyboard::Type::PROMOTE_TO) {
+        
 
         switch (G_window.kbd.piece_type) {
 
@@ -330,20 +334,7 @@ static void update() {
         if (!G_settings.pause_board_controls) {
 
             bool result = handleMouseOnBoard();
-
-            if (result && G_settings.playing_engine) {
-
-                Move engine_move = Bot::getBestMove(G_game_state.board, G_game_state.board.getTurn());
-
-                G_game_state.board.movePiece(engine_move.squares.from, engine_move.squares.to);
-
-                G_game_state.board.changeTurn();
-
-                engine_move.piece = G_game_state.board.getPieceAt(engine_move.squares.to);
-                engine_move.fen = G_game_state.board.getFen();
-
-                G_move_stack.addMove(engine_move);
-            }
+            (result);
         }
 
         if (!G_move_stack.isOnLatest()) G_settings.pause_board_controls = true;
@@ -354,13 +345,22 @@ static void update() {
         if (MoveEngine::isInCheckMate(G_game_state.board, Piece::Color::WHITE)) {
             G_game_state.winner = Player::BLACK;
             G_game_state.game_over = true;
+            G_settings.pause_board_controls = true;
         }
 
         if (MoveEngine::isInCheckMate(G_game_state.board, Piece::Color::BLACK)) {
             G_game_state.winner = Player::WHITE;
             G_game_state.game_over = true;
+            G_settings.pause_board_controls = true;
         }
 
+        if (MoveEngine::isDraw(G_game_state.board, Player::WHITE) &&
+            MoveEngine::isDraw(G_game_state.board, Player::BLACK))
+        {
+            G_game_state.winner = Player::NONE;
+            G_game_state.game_over = true;
+            G_settings.pause_board_controls = true;
+        }
     }
 
 
@@ -376,6 +376,7 @@ static void update() {
 static void drawGameOverFog() {
     
     // draw fog on game over
+    if (G_game_state.winner == Player::NONE)  G_window.rend->displayFog(Colors::DRAW_FOG);
     if (G_game_state.winner == Player::WHITE) G_window.rend->displayFog(Colors::WHITE_FOG);
     if (G_game_state.winner == Player::BLACK) G_window.rend->displayFog(Colors::BLACK_FOG);
 }
